@@ -53,12 +53,15 @@
   textarea{width:100%;min-height:200px;resize:vertical;border:1px solid var(--line);border-radius:12px;
     padding:14px;font-family:inherit;font-size:.92rem;color:var(--ink);background:#fffefb;line-height:1.5}
   textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(184,138,50,.16)}
-  .actions{display:flex;align-items:center;gap:16px;margin-top:20px;flex-wrap:wrap}
+  .actions{display:flex;align-items:center;gap:16px;margin-top:16px;flex-wrap:wrap}
+  .consent{display:flex;align-items:flex-start;gap:10px;margin-top:18px;font-size:.85rem;color:var(--ink-soft);line-height:1.45;cursor:pointer}
+  .consent input{margin-top:3px;width:17px;height:17px;flex:none;accent-color:var(--gold);cursor:pointer}
+  .consent a{color:var(--gold-deep);font-weight:600}
+  button.go:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
   button.go{font-family:inherit;font-weight:700;font-size:1rem;color:#fff;cursor:pointer;border:none;
     background:linear-gradient(135deg,var(--gold),var(--gold-deep));padding:14px 28px;border-radius:12px;
     box-shadow:0 12px 28px -12px rgba(154,111,31,.7);transition:transform .15s, box-shadow .15s}
   button.go:hover{transform:translateY(-2px);box-shadow:0 18px 34px -12px rgba(154,111,31,.75)}
-  button.go:disabled{opacity:.55;cursor:not-allowed;transform:none}
   .err{color:var(--red);font-weight:600;font-size:.9rem}
 
   /* RESULTS */
@@ -179,7 +182,7 @@
     <div class="inputs">
       <div class="field">
         <label><span class="n">1</span> Twoje doświadczenie / obecne CV</label>
-        <div class="hint">Wklej obecne CV albo opisz doświadczenie, umiejętności i wykształcenie.</div>
+        <div class="hint">Wklej obecne CV albo opisz doświadczenie, umiejętności i wykształcenie. <strong>Wskazówka:</strong> do analizy wystarczy samo doświadczenie zawodowe — nie musisz podawać telefonu, adresu ani daty urodzenia.</div>
         <textarea id="cv" placeholder="Np. 5 lat jako specjalista ds. marketingu. Prowadziłem kampanie Google Ads i Meta z budżetem 200 tys. zł/rok. Zwiększyłem ruch o 60%. Znam Google Analytics, SEO, HTML. Wykształcenie: marketing, UW..."></textarea>
       </div>
       <div class="field">
@@ -188,8 +191,12 @@
         <textarea id="job" placeholder="Np. Poszukujemy Marketing Managera. Wymagania: 3+ lata doświadczenia, znajomość performance marketingu, zarządzanie zespołem, analityka, budżetowanie. Mile widziane: doświadczenie w e-commerce, SQL..."></textarea>
       </div>
     </div>
+    <label class="consent" for="consent">
+      <input type="checkbox" id="consent">
+      <span>Zapoznałem(-am) się z <a href="polityka-prywatnosci.html" target="_blank" rel="noopener">Polityką prywatności</a> i wyrażam zgodę na przetworzenie wklejonych danych przez AI w celu analizy mojego CV. Dane są przetwarzane „w locie” i nie są przez nas zapisywane.</span>
+    </label>
     <div class="actions">
-      <button class="go" id="run">Analizuj i dopasuj CV →</button>
+      <button class="go" id="run" disabled>Analizuj i dopasuj CV →</button>
       <span class="err" id="err"></span>
     </div>
   </div>
@@ -331,6 +338,12 @@ function fail(body,e){
 }
 
 /* ---------- run ---------- */
+/* Przycisk aktywny dopiero po wyrażeniu zgody */
+const consentBox=$('#consent');
+function syncConsent(){ $('#run').disabled = !consentBox.checked; }
+consentBox.addEventListener('change', syncConsent);
+syncConsent();
+
 $('#run').addEventListener('click',run);
 async function run(){
   const cv=$('#cv').value.trim(), job=$('#job').value.trim();
@@ -453,7 +466,7 @@ WAŻNE: w treści NIE używaj cudzysłowów; ewentualnie apostrof '. Odpowiedz W
         <span class="when">⏱ ${esc(s.czas||'')}</span></div></div>`).join('')}</div>`;
   }catch(e){ fail(bP,e); }
 
-  $('#run').disabled=false; $('#run').textContent="Analizuj ponownie →";
+  $('#run').disabled = !consentBox.checked; $('#run').textContent="Analizuj ponownie →";
   $('#card-cv')?.scrollIntoView({behavior:'smooth',block:'start'});
 }
 function esc(s){return String(s==null?'':s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
