@@ -207,13 +207,13 @@ const results = $('#results');
 const BACKEND_URL = "/api/analyze";
 
 /* ---------- Helper: pytanie do AI przez bezpieczny backend ---------- */
-async function ask(prompt){
+async function ask(prompt, maxTokens){
   let res;
   try{
     res = await fetch(BACKEND_URL,{
       method:"POST",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({ prompt: prompt, max_tokens: 1200 })
+      body:JSON.stringify({ prompt: prompt, max_tokens: maxTokens || 2000 })
     });
   }catch(netErr){
     throw new Error("[POŁĄCZENIE] "+netErr.name+": "+netErr.message+
@@ -343,7 +343,7 @@ async function run(){
   // 1) tailored CV
   const bCV=card('cv','cv','Twoje dopasowane CV');
   try{
-    const cvText=await ask(`Jesteś ekspertem od pisania CV i systemów ATS. Napisz zwięzłe, jednostronicowe, profesjonalne CV po polsku, maksymalnie dopasowane do tego ogłoszenia: naturalnie wpleć słowa kluczowe z ogłoszenia, użyj mierzalnych osiągnięć, sekcje: nagłówek z imieniem/rolą, Podsumowanie zawodowe, Doświadczenie, Umiejętności, Wykształcenie. Format Markdown (## sekcje, **pogrubienia**, - punkty). Zwróć WYŁĄCZNIE treść CV.${base}`);
+    const cvText=await ask(`Jesteś ekspertem od pisania CV i systemów ATS. Napisz zwięzłe, jednostronicowe, profesjonalne CV po polsku, maksymalnie dopasowane do tego ogłoszenia: naturalnie wpleć słowa kluczowe z ogłoszenia, użyj mierzalnych osiągnięć, sekcje: nagłówek z imieniem/rolą, Podsumowanie zawodowe, Doświadczenie, Umiejętności, Wykształcenie. Format Markdown (## sekcje, **pogrubienia**, - punkty). Zwróć WYŁĄCZNIE treść CV.${base}`, 4000);
     bCV.innerHTML=`<div class="cv">${md(cvText)}</div>
       <div class="copybar"><button id="copycv">📋 Kopiuj CV</button></div>`;
     bCV.querySelector('#copycv').onclick=()=>{navigator.clipboard.writeText(cvText);bCV.querySelector('#copycv').textContent="✓ Skopiowano";};
@@ -353,7 +353,7 @@ async function run(){
   const bA=card('ats','ats','Ocena dopasowania (ATS) i analiza');
   try{
     const j=parseJSON(await ask(`Jesteś rekruterem i ekspertem ATS. Porównaj kandydata z ogłoszeniem. Odpowiedz WYŁĄCZNIE poprawnym JSON po polsku, krótko (max ~12 słów na punkt), w formacie:
-{"ats_score":<0-100>,"ats_uwagi":["..","..",".."],"podsumowanie":"2-3 zdania oceny dopasowania","przed_po":[{"aspekt":"..","przed":"..","po":".."},{"aspekt":"..","przed":"..","po":".."}],"mocne_strony":["..","..",".."],"slabe_strony":["..","..",".."]}${base}`));
+{"ats_score":<0-100>,"ats_uwagi":["..","..",".."],"podsumowanie":"2-3 zdania oceny dopasowania","przed_po":[{"aspekt":"..","przed":"..","po":".."},{"aspekt":"..","przed":"..","po":".."}],"mocne_strony":["..","..",".."],"slabe_strony":["..","..",".."]}${base}`, 2500));
     const score=Math.max(0,Math.min(100,Math.round(j.ats_score||0)));
     const col=score>=75?'var(--green)':score>=50?'var(--gold)':'var(--red)';
     const C=2*Math.PI*52, off=C*(1-score/100);
@@ -396,7 +396,7 @@ async function run(){
   // --- ZAPYTANIE 1: pytania rekrutacyjne (osobno) ---
   try{
     const j=parseJSON(await ask(`Jesteś doświadczonym rekruterem na rynku polskim. Na podstawie kandydata i ogłoszenia przygotuj 4 prawdopodobne pytania rekrutacyjne wraz z sugerowaną, dopasowaną do kandydata odpowiedzią. WAŻNE: w treści NIE używaj znaków cudzysłowu (" ani „ ”); jeśli musisz coś wyróżnić, użyj apostrofu '. Odpowiedz WYŁĄCZNIE poprawnym JSON po polsku:
-{"pytania":[{"pytanie":"..","odpowiedz":".."},{"pytanie":"..","odpowiedz":".."},{"pytanie":"..","odpowiedz":".."},{"pytanie":"..","odpowiedz":".."}]}${base}`));
+{"pytania":[{"pytanie":"..","odpowiedz":".."},{"pytanie":"..","odpowiedz":".."},{"pytanie":"..","odpowiedz":".."},{"pytanie":"..","odpowiedz":".."}]}${base}`, 2500));
     bQ.innerHTML=`<div class="qa">${(j.pytania||[]).map(q=>`
       <details><summary>${esc(q.pytanie||'')}<span class="chev">›</span></summary>
       <div class="ans">${esc(q.odpowiedz||'')}</div></details>`).join('')}</div>`;
@@ -411,7 +411,7 @@ KROK PO KROKU:
 3. Uwzględnij bieżące realia rynku w Polsce — NIE zaniżaj.
 ZAWSZE wypełnij pole 'widelki' konkretnymi liczbami (nigdy nie zostawiaj pustego).
 WAŻNE: w treści NIE używaj cudzysłowów; ewentualnie apostrof '. Odpowiedz WYŁĄCZNIE poprawnym JSON po polsku, dokładnie w tym formacie:
-{"widelki":"12 000 – 16 000 zł brutto/mies.","uzasadnienie":"miasto, poziom, branża w 1 zdaniu","uwaga":"Szacunek orientacyjny — zweryfikuj w aktualnych raportach płacowych (np. Hays, Antal, No Fluff Jobs)"}${base}`));
+{"widelki":"12 000 – 16 000 zł brutto/mies.","uzasadnienie":"miasto, poziom, branża w 1 zdaniu","uwaga":"Szacunek orientacyjny — zweryfikuj w aktualnych raportach płacowych (np. Hays, Antal, No Fluff Jobs)"}${base}`, 1500));
     bSal.innerHTML=`<div class="salary">
       <div class="big">${esc(w.widelki||'—')}</div>
       <div class="why">${esc(w.uzasadnienie||'')}</div>
@@ -423,7 +423,7 @@ WAŻNE: w treści NIE używaj cudzysłowów; ewentualnie apostrof '. Odpowiedz W
   const bP=card('plan','plan','Plan: jak szybko wzmocnić słabe strony');
   try{
     const j=parseJSON(await ask(`Na podstawie braków kandydata względem ogłoszenia stwórz konkretny, wykonalny plan ich szybkiego nadrobienia (kursy, projekty, certyfikaty, praktyka). 4 kroki. Odpowiedz WYŁĄCZNIE JSON po polsku:
-{"plan":[{"obszar":"luka/słaba strona","dzialanie":"konkretny krok lub zasób","czas":"np. 2 tygodnie"},{...},{...},{...}]}${base}`));
+{"plan":[{"obszar":"luka/słaba strona","dzialanie":"konkretny krok lub zasób","czas":"np. 2 tygodnie"},{...},{...},{...}]}${base}`, 2500));
     bP.innerHTML=`<div class="plan">${(j.plan||[]).map((s,i)=>`
       <div class="step"><div class="dot">${i+1}</div>
         <div class="c"><h4>${esc(s.obszar||'')}</h4>
