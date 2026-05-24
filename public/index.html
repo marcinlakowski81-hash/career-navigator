@@ -393,7 +393,14 @@ async function run(){
   const bQ=card('qa','qa','Pytania rekrutacyjne i odpowiedzi');
   const bSal=card('sal','sal','Oczekiwania finansowe');
   try{
-    const j=parseJSON(await ask(`Jesteś doświadczonym rekruterem na rynku polskim. Na podstawie kandydata i ogłoszenia przygotuj 4 prawdopodobne pytania rekrutacyjne wraz z sugerowaną, dopasowaną do kandydata odpowiedzią, oraz orientacyjne oczekiwania finansowe (brutto/miesiąc, PLN) dla tej roli w Polsce. WAŻNE: w treści odpowiedzi NIE używaj znaków cudzysłowu (" ani „ ”); jeśli musisz coś wyróżnić, użyj apostrofu '. Odpowiedz WYŁĄCZNIE poprawnym JSON po polsku:
+    const j=parseJSON(await ask(`Jesteś doświadczonym rekruterem na rynku polskim. Na podstawie kandydata i ogłoszenia przygotuj 4 prawdopodobne pytania rekrutacyjne wraz z sugerowaną, dopasowaną do kandydata odpowiedzią, oraz orientacyjne oczekiwania finansowe (brutto/miesiąc, PLN).
+ZASADY DLA WIDEŁEK PŁACOWYCH:
+- Najpierw ustal z ogłoszenia: (a) MIASTO/lokalizację, (b) POZIOM stanowiska (junior/mid/senior/manager/dyrektor), (c) BRANŻĘ.
+- Widełki dopasuj DO TEGO KONKRETNEGO MIASTA: Warszawa zwykle najwyżej; Kraków, Wrocław, Trójmiasto, Poznań nieco niżej; mniejsze miasta i praca lokalna jeszcze niżej; rekrutacja w pełni zdalna — według stawek ogólnopolskich.
+- Uwzględnij realia bieżącego rynku w Polsce (płace rosną co roku — nie zaniżaj).
+- W polu 'uzasadnienie' KRÓTKO napisz, jakie miasto i poziom przyjąłeś (np. 'Warszawa, poziom manager, e-commerce').
+- W polu 'uwaga' napisz: 'Szacunek orientacyjny — zweryfikuj w aktualnych raportach płacowych (np. Hays, Antal, No Fluff Jobs)'.
+WAŻNE: w treści odpowiedzi NIE używaj znaków cudzysłowu (" ani „ ”); jeśli musisz coś wyróżnić, użyj apostrofu '. Odpowiedz WYŁĄCZNIE poprawnym JSON po polsku:
 {"pytania":[{"pytanie":"..","odpowiedz":".."},{"pytanie":"..","odpowiedz":".."},{"pytanie":"..","odpowiedz":".."},{"pytanie":"..","odpowiedz":".."}],"wynagrodzenie":{"widelki":"X 000 – Y 000 zł brutto/mies.","uzasadnienie":"1-2 zdania","uwaga":"szacunek orientacyjny"}}${base}`));
     bQ.innerHTML=`<div class="qa">${(j.pytania||[]).map(q=>`
       <details><summary>${esc(q.pytanie||'')}<span class="chev">›</span></summary>
@@ -402,7 +409,7 @@ async function run(){
     bSal.innerHTML=`<div class="salary">
       <div class="big">${esc(w.widelki||'—')}</div>
       <div class="why">${esc(w.uzasadnienie||'')}</div>
-      <div class="dis">⚠︎ ${esc(w.uwaga||'Szacunek orientacyjny — zależy od miasta, branży i wielkości firmy.')}</div></div>`;
+      <div class="dis">⚠︎ ${esc(w.uwaga||'Szacunek orientacyjny — zależy od miasta, branży i wielkości firmy. Zweryfikuj w aktualnych raportach płacowych.')}</div></div>`;
   }catch(e){ fail(bQ,e); fail(bSal,e); }
 
   // 4) improvement plan
