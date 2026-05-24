@@ -27,7 +27,7 @@ export default async function handler(req, res) {
   try {
     const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
     prompt = body.prompt;
-    maxTokens = body.max_tokens || 1200;
+    maxTokens = body.max_tokens || 2000;
   } catch (e) {
     return res.status(400).json({ error: 'Nieprawidłowe dane wejściowe.' });
   }
