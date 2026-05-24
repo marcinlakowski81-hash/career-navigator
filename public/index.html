@@ -344,9 +344,31 @@ async function run(){
   const bCV=card('cv','cv','Twoje dopasowane CV');
   try{
     const cvText=await ask(`Jesteś ekspertem od pisania CV i systemów ATS. Napisz zwięzłe, jednostronicowe, profesjonalne CV po polsku, maksymalnie dopasowane do tego ogłoszenia: naturalnie wpleć słowa kluczowe z ogłoszenia, użyj mierzalnych osiągnięć, sekcje: nagłówek z imieniem/rolą, Podsumowanie zawodowe, Doświadczenie, Umiejętności, Wykształcenie. Format Markdown (## sekcje, **pogrubienia**, - punkty). Zwróć WYŁĄCZNIE treść CV.${base}`, 4000);
-    bCV.innerHTML=`<div class="cv">${md(cvText)}</div>
-      <div class="copybar"><button id="copycv">📋 Kopiuj CV</button></div>`;
-    bCV.querySelector('#copycv').onclick=()=>{navigator.clipboard.writeText(cvText);bCV.querySelector('#copycv').textContent="✓ Skopiowano";};
+    bCV.innerHTML=`<div class="cv" id="cvRendered">${md(cvText)}</div>
+      <div class="copybar"><button id="copycv">📋 Kopiuj sformatowane CV</button></div>`;
+    bCV.querySelector('#copycv').onclick=async ()=>{
+      const btn=bCV.querySelector('#copycv');
+      const node=bCV.querySelector('#cvRendered');
+      const html=node.innerHTML;
+      const plain=node.innerText;   // czytelny tekst (bez znaczników Markdown)
+      try{
+        // Kopiuj jako "rich text" — wklei się do Worda z nagłówkami, pogrubieniami i punktami
+        if(window.ClipboardItem && navigator.clipboard && navigator.clipboard.write){
+          await navigator.clipboard.write([new ClipboardItem({
+            "text/html": new Blob([html], {type:"text/html"}),
+            "text/plain": new Blob([plain], {type:"text/plain"})
+          })]);
+        } else {
+          await navigator.clipboard.writeText(plain);
+        }
+        btn.textContent="✓ Skopiowano (gotowe do wklejenia)";
+      }catch(_){
+        // ostateczny zapas — czysty tekst
+        try{ await navigator.clipboard.writeText(plain); btn.textContent="✓ Skopiowano"; }
+        catch(__){ btn.textContent="Zaznacz tekst i skopiuj ręcznie"; }
+      }
+      setTimeout(()=>{ btn.textContent="📋 Kopiuj sformatowane CV"; }, 3500);
+    };
   }catch(e){ fail(bCV,e); }
 
   // 2) ATS + summary + before/after + strengths + weaknesses
