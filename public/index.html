@@ -245,7 +245,45 @@ function parseJSON(txt){
   let t = txt.replace(/```json/gi,"").replace(/```/g,"").trim();
   const a=t.indexOf("{"), b=t.lastIndexOf("}");
   if(a>=0&&b>=0) t=t.slice(a,b+1);
-  return JSON.parse(t);
+
+  // 1) próba zwykła
+  try{ return JSON.parse(t); }catch(_){}
+
+  // 2) naprawa najczęstszych usterek z modelu
+  let f = t
+    .replace(/[\u201C\u201D\u201E\u201F]/g,'"')   // „inteligentne" cudzysłowy → proste
+    .replace(/[\u2018\u2019]/g,"'")               // apostrofy typograficzne
+    .replace(/,\s*([}\]])/g,"$1")                 // przecinki przed } lub ]
+    .replace(/}\s*{/g,"},{");                     // brakujący przecinek między obiektami
+  try{ return JSON.parse(f); }catch(_){}
+
+  // 2b) zneutralizuj „błądzące" cudzysłowy WEWNĄTRZ wartości tekstowych:
+  //     przejdź znak po znaku; cudzysłów w środku tekstu zamień na apostrof
+  let h = (function(s){
+    let out="", inStr=false;
+    for(let i=0;i<s.length;i++){
+      const c=s[i], prev=s[i-1];
+      if(c==='"' && prev!=='\\'){
+        if(!inStr){ inStr=true; out+=c; continue; }
+        // jesteśmy w stringu i trafiamy na " — sprawdź, czy to realny koniec
+        let j=i+1; while(j<s.length && /\s/.test(s[j])) j++;
+        if(j<s.length && [',',':','}',']'].includes(s[j])){ inStr=false; out+=c; }
+        else { out+="'"; } // cudzysłów w środku tekstu → apostrof
+        continue;
+      }
+      out+=c;
+    }
+    return out;
+  })(f);
+  try{ return JSON.parse(h); }catch(_){ f=h; }
+
+  // 3) ostatnia deska ratunku: domknij urwane nawiasy
+  let g = f;
+  const opensO=(g.match(/{/g)||[]).length, closO=(g.match(/}/g)||[]).length;
+  const opensA=(g.match(/\[/g)||[]).length, closA=(g.match(/]/g)||[]).length;
+  g += "]".repeat(Math.max(0,opensA-closA)) + "}".repeat(Math.max(0,opensO-closO));
+  g = g.replace(/,\s*([}\]])/g,"$1");
+  return JSON.parse(g);
 }
 
 /* ---------- tiny markdown -> html ---------- */
@@ -355,7 +393,7 @@ async function run(){
   const bQ=card('qa','qa','Pytania rekrutacyjne i odpowiedzi');
   const bSal=card('sal','sal','Oczekiwania finansowe');
   try{
-    const j=parseJSON(await ask(`Jesteś doświadczonym rekruterem na rynku polskim. Na podstawie kandydata i ogłoszenia przygotuj 4 prawdopodobne pytania rekrutacyjne wraz z sugerowaną, dopasowaną do kandydata odpowiedzią, oraz orientacyjne oczekiwania finansowe (brutto/miesiąc, PLN) dla tej roli w Polsce. Odpowiedz WYŁĄCZNIE JSON po polsku:
+    const j=parseJSON(await ask(`Jesteś doświadczonym rekruterem na rynku polskim. Na podstawie kandydata i ogłoszenia przygotuj 4 prawdopodobne pytania rekrutacyjne wraz z sugerowaną, dopasowaną do kandydata odpowiedzią, oraz orientacyjne oczekiwania finansowe (brutto/miesiąc, PLN) dla tej roli w Polsce. WAŻNE: w treści odpowiedzi NIE używaj znaków cudzysłowu (" ani „ ”); jeśli musisz coś wyróżnić, użyj apostrofu '. Odpowiedz WYŁĄCZNIE poprawnym JSON po polsku:
 {"pytania":[{"pytanie":"..","odpowiedz":".."},{"pytanie":"..","odpowiedz":".."},{"pytanie":"..","odpowiedz":".."},{"pytanie":"..","odpowiedz":".."}],"wynagrodzenie":{"widelki":"X 000 – Y 000 zł brutto/mies.","uzasadnienie":"1-2 zdania","uwaga":"szacunek orientacyjny"}}${base}`));
     bQ.innerHTML=`<div class="qa">${(j.pytania||[]).map(q=>`
       <details><summary>${esc(q.pytanie||'')}<span class="chev">›</span></summary>
