@@ -63,6 +63,19 @@
     box-shadow:0 12px 28px -12px rgba(154,111,31,.7);transition:transform .15s, box-shadow .15s}
   button.go:hover{transform:translateY(-2px);box-shadow:0 18px 34px -12px rgba(154,111,31,.75)}
   .err{color:var(--red);font-weight:600;font-size:.9rem}
+  .test-warning{
+    flex:1; min-width:260px;
+    border:1.5px solid var(--red);
+    background:rgba(178,34,52,.06);
+    color:var(--red);
+    border-radius:12px;
+    padding:10px 14px;
+    font-size:.82rem;
+    line-height:1.45;
+  }
+  .test-warning b{display:block;font-size:.88rem;letter-spacing:.04em;margin-bottom:4px;font-weight:700}
+  .test-warning ul{margin:4px 0 0 0;padding-left:18px}
+  .test-warning li{margin:2px 0}
 
   /* RESULTS */
   #results{margin-top:30px;display:none;flex-direction:column;gap:20px}
@@ -198,6 +211,15 @@
     <div class="actions">
       <button class="go" id="run" disabled>Analizuj i dopasuj CV →</button>
       <span class="err" id="err"></span>
+      <div class="test-warning">
+        <b>⚠️ WERSJA W FAZIE TESTÓW</b>
+        Nie podawaj danych wrażliwych, takich jak:
+        <ul>
+          <li>nazwisko, data urodzenia, PESEL, adres zamieszkania, numer telefonu,</li>
+          <li>nazwy pracodawców (zastąp je np. „Firma X", „Firma Y", „Firma Z").</li>
+        </ul>
+        Wystarczą informacje o doświadczeniu, branży i umiejętnościach.
+      </div>
     </div>
   </div>
 
