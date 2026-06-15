@@ -317,11 +317,12 @@ function switchTab(n){
 }
 
 /* ---------- Backend call ---------- */
-async function ask(prompt, maxTokens){
+async function ask(prompt, maxTokens, webSearch){
+  // webSearch: true → F2 używa web_search tool
   let res;
   try{
     res = await fetch(BACKEND_URL,{method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({prompt,max_tokens:maxTokens||2000})});
+      body:JSON.stringify({prompt, max_tokens: maxTokens||2000, web_search: webSearch===true})});
   }catch(netErr){
     throw new Error("[POŁĄCZENIE] "+netErr.name+": "+netErr.message);
   }
@@ -583,7 +584,7 @@ ZASADY:
 
   const bE=card('emp','emp','Raport pracodawcy: '+name,results2);
   try{
-    const raw=await ask(prompt,4000);
+    const raw=await ask(prompt,4000,true); // true = web_search dla F2
     const j=parseJSON(raw);
 
     // score color & verdict class
