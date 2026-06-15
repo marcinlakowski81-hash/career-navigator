@@ -347,13 +347,55 @@ function showDiag(msg,container){
   container.prepend(d);
 }
 function parseJSON(txt){
-  let t=txt.replace(/```json/gi,"").replace(/```/g,"").trim();
-  const a=t.indexOf("{"),b=t.lastIndexOf("}");
-  if(a>=0&&b>=0)t=t.slice(a,b+1);
+  // Krok 1: wyczysc opakowania markdown
+  let t = txt
+    .replace(/```json/gi,"").replace(/```/g,"")
+    .replace(/^[^{]*/,"").replace(/[^}]*$/,"")
+    .trim();
+
+  // Krok 2: wytnij od pierwszego { do ostatniego }
+  const a=t.indexOf("{"), b=t.lastIndexOf("}");
+  if(a>=0 && b>=0 && b>a) t=t.slice(a, b+1);
+
+  // Krok 3: proba bezposrednia
   try{return JSON.parse(t);}catch(_){}
-  let f=t.replace(/[\u201C\u201D\u201E\u201F]/g,'"').replace(/[\u2018\u2019]/g,"'")
-    .replace(/,\s*([}\]])/g,"$1").replace(/}\s*{/g,"},{");
+
+  // Krok 4: naprawa typowych bledow modelu
+  let f = t
+    .replace(/[\u201C\u201D\u201E\u201F]/g,'"')
+    .replace(/[\u2018\u2019]/g,"'")
+    .replace(/,\s*([}\]])/g,"$1")
+    .replace(/}\s*{/g,"},{")
+    .replace(/([^\\])\n/g,"$1 ")
+    .replace(/\t/g," ");
   try{return JSON.parse(f);}catch(_){}
+
+  // Krok 5: agresywna naprawa - zamien cudzylowy wewnatrz stringow
+  let h="", inStr=false, escape=false;
+  for(let i=0;i<f.length;i++){
+    const c=f[i];
+    if(escape){h+=c;escape=false;continue;}
+    if(c==="\\"){h+=c;escape=true;continue;}
+    if(c==='"'){
+      if(!inStr){inStr=true;h+=c;continue;}
+      let j=i+1;
+      while(j<f.length && /\s/.test(f[j])) j++;
+      if(j<f.length && [",",":","}"," ","]"].includes(f[j])){
+        inStr=false;h+=c;
+      } else {
+        h+="'";
+      }
+      continue;
+    }
+    h+=c;
+  }
+  try{return JSON.parse(h);}catch(_){f=h;}
+
+  // Krok 6: domknij nawiasy
+  const oO=(f.match(/{/g)||[]).length, cO=(f.match(/}/g)||[]).length;
+  const oA=(f.match(/\[/g)||[]).length, cA=(f.match(/]/g)||[]).length;
+  f += "]".repeat(Math.max(0,oA-cA)) + "}".repeat(Math.max(0,oO-cO));
+  f = f.replace(/,\s*([}\]])/g,"$1");
   return JSON.parse(f);
 }
 function md(src){
@@ -520,67 +562,24 @@ async function runF2(){
 
   const firmInfo=`Nazwa firmy: ${name}${nip?'\nNIP: '+nip:''}${city?'\nMiejscowość: '+city:''}${role?'\nStanowisko kandydata: '+role:''}`;
 
-  const prompt=`Jesteś ekspertem ds. due diligence pracodawców i doradztwa kariery. Analizujesz firmy na podstawie publicznie dostępnych danych i pomagasz kandydatom podjąć świadomą decyzję.
+  const prompt=`Jesteś ekspertem ds. due diligence pracodawców. Przeszukaj internet (KRS, GoWork, Aleo.com, LinkedIn, strona www, media) i wygeneruj raport o pracodawcy.
 
-DANE FIRMY DO ANALIZY:
+FIRMA DO ANALIZY:
 ${firmInfo}
 
-Przeszukaj dostępne dane publiczne (KRS, GoWork, Aleo.com, LinkedIn, strona www firmy, media branżowe) i wygeneruj raport w 9 sekcjach. Odpowiedz WYŁĄCZNIE poprawnym JSON po polsku:
+KRYTYCZNE ZASADY JSON:
+1. Odpowiedz TYLKO czystym JSON - bez markdown, bez komentarzy, bez tekstu przed lub po JSON
+2. NIE używaj znaków | w wartościach JSON
+3. Wszystkie wartości tekstowe w cudzysłowach prostych "..."
+4. Liczby bez cudzysłowów: "ocena": 7 (nie "7")
+5. Brak danych = "brak danych publicznych"
+6. Maksymalnie krotkie wartości - max 2 zdania w polach tekstowych
 
-{
-  "nazwa_firmy": "oficjalna nazwa z KRS",
-  "ocena": <0-10>,
-  "werdykt": "WARTO APLIKOWAĆ" | "WARTO ROZWAŻYĆ Z OSTROŻNOŚCIĄ" | "WYSOKIE RYZYKO",
-  "executive_summary": "3-5 zdań podsumowania",
-  "krs": {
-    "krs": "numer KRS lub brak danych",
-    "nip": "NIP",
-    "data_rejestracji": "...",
-    "adres": "...",
-    "kapital": "... PLN",
-    "wlasciciel": "...",
-    "forma_prawna": "..."
-  },
-  "model_biznesowy": "3-4 zdania o działalności, branżach, klientach, certyfikatach",
-  "zatrudnienie": [
-    {"rok": "2022", "pracownicy": "...", "trend": "..."},
-    {"rok": "2023", "pracownicy": "...", "trend": "..."},
-    {"rok": "2024", "pracownicy": "...", "trend": "..."}
-  ],
-  "finanse": [
-    {"rok": "2022", "przychody": "...", "zysk": "...", "marza": "...", "trend": "..."},
-    {"rok": "2023", "przychody": "...", "zysk": "...", "marza": "...", "trend": "..."},
-    {"rok": "2024", "przychody": "...", "zysk": "...", "marza": "...", "trend": "..."}
-  ],
-  "sygnaly": [
-    {"sygnal": "...", "opis": "...", "ryzyko": "WYSOKIE" | "UMIARKOWANE" | "NISKIE"}
-  ],
-  "opinie": [
-    {"zrodlo": "GoWork.pl", "ocena": "...", "liczba": "...", "watki": "..."},
-    {"zrodlo": "Aleo.com", "ocena": "...", "liczba": "...", "watki": "..."},
-    {"zrodlo": "Aplikuj.pl / Google", "ocena": "...", "liczba": "...", "watki": "..."}
-  ],
-  "swot": {
-    "mocne": ["...", "...", "...", "..."],
-    "slabe": ["...", "...", "...", "..."],
-    "szanse": ["...", "...", "...", "..."],
-    "zagrozenia": ["...", "...", "...", "..."]
-  },
-  "ocena_kryteria": [
-    {"kryterium": "Stabilność finansowa", "gwiazdki": <1-5>, "komentarz": "..."},
-    {"kryterium": "Perspektywy rozwoju", "gwiazdki": <1-5>, "komentarz": "..."},
-    {"kryterium": "Kultura organizacyjna", "gwiazdki": <1-5>, "komentarz": "..."},
-    {"kryterium": "Poziom ryzyka", "gwiazdki": 0, "komentarz": "NISKIE / UMIARKOWANE / WYSOKIE"},
-    {"kryterium": "Potencjał kariery", "gwiazdki": <1-5>, "komentarz": "..."}
-  ],
-  "werdykt_opis": "2-3 zdania uzasadnienia werdyktu i co warto zweryfikować przed decyzją"
-}
+FORMAT (wypelnij danymi z wyszukiwania):
+{"nazwa_firmy":"nazwa z KRS","ocena":7,"werdykt":"WARTO APLIKOWAC","executive_summary":"2-3 zdania o firmie.","krs":{"krs":"numer","nip":"nip","data_rejestracji":"data","adres":"adres","kapital":"kwota PLN","wlasciciel":"nazwa","forma_prawna":"Sp. z o.o."},"model_biznesowy":"Opis dzialalnosci w 2-3 zdaniach.","zatrudnienie":[{"rok":"2022","pracownicy":"liczba lub brak danych","trend":"wzrost lub stabilny"},{"rok":"2023","pracownicy":"liczba","trend":"trend"},{"rok":"2024","pracownicy":"liczba lub brak danych","trend":"trend"}],"finanse":[{"rok":"2022","przychody":"kwota lub brak danych","zysk":"kwota lub brak danych","marza":"% lub brak danych","trend":"opis"},{"rok":"2023","przychody":"kwota","zysk":"kwota","marza":"%","trend":"opis"},{"rok":"2024","przychody":"kwota lub brak danych","zysk":"brak danych","marza":"brak danych","trend":"brak danych"}],"sygnaly":[{"sygnal":"nazwa sygnalu","opis":"krotki opis","ryzyko":"WYSOKIE"},{"sygnal":"inny sygnal","opis":"opis","ryzyko":"UMIARKOWANE"}],"opinie":[{"zrodlo":"GoWork.pl","ocena":"X/5","liczba":"N opinii","watki":"krotki opis"},{"zrodlo":"Aleo.com","ocena":"X/5 lub brak","liczba":"N lub brak","watki":"opis"},{"zrodlo":"Google/inne","ocena":"opis","liczba":"brak","watki":"opis"}],"swot":{"mocne":["punkt 1","punkt 2","punkt 3"],"slabe":["punkt 1","punkt 2","punkt 3"],"szanse":["punkt 1","punkt 2","punkt 3"],"zagrozenia":["punkt 1","punkt 2","punkt 3"]},"ocena_kryteria":[{"kryterium":"Stabilnosc finansowa","gwiazdki":3,"komentarz":"krotki opis"},{"kryterium":"Perspektywy rozwoju","gwiazdki":4,"komentarz":"opis"},{"kryterium":"Kultura organizacyjna","gwiazdki":3,"komentarz":"opis"},{"kryterium":"Poziom ryzyka","gwiazdki":0,"komentarz":"UMIARKOWANE"},{"kryterium":"Potencjal kariery","gwiazdki":4,"komentarz":"opis"}],"werdykt_opis":"2 zdania co warto zweryfikowac przed decyzja."}
 
-ZASADY:
-- Jeśli danych brak — wpisz "brak danych publicznych", nie wymyślaj
-- GoWork ocena < 2.0 to czerwona flaga — obniż ocenę końcową
-- Upadłość w grupie kapitałowej to sygnał WYSOKIE ryzyko
-- Bądź obiektywny i konkretny`;
+Werdykt moze byc: WARTO APLIKOWAC lub WARTO ROZWAZYC Z OSTROZNOSCIA lub WYSOKIE RYZYKO
+GoWork ponizej 2.0 to czerwona flaga. Upadlosc w grupie = WYSOKIE ryzyko.`;
 
   const bE=card('emp','emp','Raport pracodawcy: '+name,results2);
   try{
