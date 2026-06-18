@@ -227,6 +227,26 @@
   .scoring-notice{background:rgba(22,38,63,.04);border:1px solid rgba(22,38,63,.14);border-radius:12px;
     padding:11px 16px;font-size:.82rem;color:var(--ink-soft);line-height:1.5;margin-bottom:14px}
 
+  /* FEEDBACK WIDGET */
+  .feedback-box{margin-top:20px;background:var(--paper-2);border:1px solid var(--line);border-radius:14px;padding:18px 22px}
+  .feedback-box p.fb-title{font-family:'Fraunces',serif;font-size:1rem;font-weight:600;color:var(--ink);margin:0 0 4px}
+  .feedback-box p.fb-sub{font-size:.78rem;color:var(--muted);margin:0 0 12px}
+  .fb-stars{display:flex;gap:6px;margin-bottom:0}
+  .fb-star{font-size:26px;color:var(--line);cursor:pointer;transition:color .1s;background:none;border:none;padding:0;line-height:1}
+  .fb-star.on,.fb-star:hover~.fb-star+.fb-star,.fb-star.hover{color:var(--gold)}
+  .fb-extra{margin-top:14px;display:none}
+  .fb-extra textarea{width:100%;min-height:72px;resize:none;border:1px solid var(--line);border-radius:10px;
+    padding:10px 12px;font-family:inherit;font-size:.85rem;color:var(--ink);background:#fffefb;line-height:1.5}
+  .fb-extra textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(184,138,50,.14)}
+  .fb-note{font-size:.73rem;color:var(--muted);margin:6px 0 12px}
+  .fb-btns{display:flex;gap:10px}
+  .fb-btn-skip{font-family:inherit;font-size:.83rem;font-weight:600;cursor:pointer;border:1px solid var(--line);
+    background:none;color:var(--muted);padding:9px 16px;border-radius:9px}
+  .fb-btn-send{font-family:inherit;font-size:.83rem;font-weight:700;cursor:pointer;border:none;
+    background:linear-gradient(135deg,var(--gold),var(--gold-deep));color:#fff;padding:9px 20px;border-radius:9px}
+  .fb-btn-skip:hover{border-color:var(--gold);color:var(--gold-deep)}
+  .fb-thanks{margin-top:12px;font-size:.85rem;color:var(--green);font-weight:600;display:none}
+
   /* COOKIE BANNER */
   #cn-cookie-banner{position:fixed;bottom:0;left:0;right:0;z-index:9999;
     background:linear-gradient(180deg,#15233b,#1a2e4a);color:#f3ead7;
@@ -349,6 +369,26 @@
     <div id="result-disclaimer-f1" style="display:none" class="result-disclaimer">
       ⚠️ Wynik został wygenerowany automatycznie z wykorzystaniem AI. Ma charakter pomocniczy, orientacyjny i edukacyjny. Może zawierać błędy, nieścisłości lub uproszczenia. Przed wykorzystaniem wyniku, w szczególności przed wysłaniem CV do pracodawcy, zweryfikuj treść samodzielnie.
     </div>
+    <div id="feedback-f1" style="display:none" class="feedback-box">
+      <p class="fb-title">Jak oceniasz tę analizę?</p>
+      <p class="fb-sub">opcjonalne · zajmuje 10 sekund</p>
+      <div class="fb-stars" id="fb-stars-f1" role="group" aria-label="Ocena gwiazdkowa">
+        <button class="fb-star" data-v="1" aria-label="1 gwiazdka">★</button>
+        <button class="fb-star" data-v="2" aria-label="2 gwiazdki">★</button>
+        <button class="fb-star" data-v="3" aria-label="3 gwiazdki">★</button>
+        <button class="fb-star" data-v="4" aria-label="4 gwiazdki">★</button>
+        <button class="fb-star" data-v="5" aria-label="5 gwiazdek">★</button>
+      </div>
+      <div class="fb-extra" id="fb-extra-f1">
+        <textarea id="fb-text-f1" placeholder="Np. brakowało mi informacji o..."></textarea>
+        <p class="fb-note">Wysyłamy tylko ocenę i uwagi — bez treści CV ani wyników analizy.</p>
+        <div class="fb-btns">
+          <button class="fb-btn-skip" id="fb-skip-f1">Pomiń</button>
+          <button class="fb-btn-send" id="fb-send-f1">Wyślij opinię</button>
+        </div>
+      </div>
+      <p class="fb-thanks" id="fb-thanks-f1">✓ Dziękujemy za opinię!</p>
+    </div>
   </div>
 
   <!-- TAB 2: Scoring Pracodawcy -->
@@ -398,6 +438,26 @@
     <div id="results2"></div>
     <div id="result-disclaimer-f2" style="display:none" class="result-disclaimer">
       ⚠️ Wynik scoringu został wygenerowany automatycznie z wykorzystaniem AI na podstawie danych publicznie dostępnych oraz informacji podanych przez Użytkownika. Wynik może być niepełny, nieaktualny lub zawierać błędy. Nie stanowi opinii prawnej, finansowej, inwestycyjnej ani rekomendacji zatrudnienia. Przed podjęciem decyzji zweryfikuj informacje w niezależnych źródłach.
+    </div>
+    <div id="feedback-f2" style="display:none" class="feedback-box">
+      <p class="fb-title">Jak oceniasz scoring pracodawcy?</p>
+      <p class="fb-sub">opcjonalne · zajmuje 10 sekund</p>
+      <div class="fb-stars" id="fb-stars-f2" role="group" aria-label="Ocena gwiazdkowa">
+        <button class="fb-star" data-v="1" aria-label="1 gwiazdka">★</button>
+        <button class="fb-star" data-v="2" aria-label="2 gwiazdki">★</button>
+        <button class="fb-star" data-v="3" aria-label="3 gwiazdki">★</button>
+        <button class="fb-star" data-v="4" aria-label="4 gwiazdki">★</button>
+        <button class="fb-star" data-v="5" aria-label="5 gwiazdek">★</button>
+      </div>
+      <div class="fb-extra" id="fb-extra-f2">
+        <textarea id="fb-text-f2" placeholder="Np. brakowało mi informacji o..."></textarea>
+        <p class="fb-note">Wysyłamy tylko ocenę i uwagi — bez nazwy firmy ani wyników scoringu.</p>
+        <div class="fb-btns">
+          <button class="fb-btn-skip" id="fb-skip-f2">Pomiń</button>
+          <button class="fb-btn-send" id="fb-send-f2">Wyślij opinię</button>
+        </div>
+      </div>
+      <p class="fb-thanks" id="fb-thanks-f2">✓ Dziękujemy za opinię!</p>
     </div>
   </div>
 
@@ -649,6 +709,7 @@ async function runF1(){
   $('#run').disabled=!consentBox1.checked;$('#run').textContent="Analizuj ponownie →";
   $('#card-cv')?.scrollIntoView({behavior:'smooth',block:'start'});
   document.getElementById('result-disclaimer-f1').style.display='block';
+  document.getElementById('feedback-f1').style.display='block';
 }
 
 /* ================================================================
@@ -856,7 +917,59 @@ GoWork ponizej 2.0 to czerwona flaga. Upadlosc w grupie = WYSOKIE ryzyko.`;
   $('#run2').disabled=!consentBox2.checked;$('#run2').textContent="Analizuj ponownie →";
   $('#card-emp')?.scrollIntoView({behavior:'smooth',block:'start'});
   document.getElementById('result-disclaimer-f2').style.display='block';
+  document.getElementById('feedback-f2').style.display='block';
 }
+</script>
+
+<!-- ================================================================
+     FEEDBACK WIDGET — LOGIKA
+     ================================================================ -->
+<script>
+(function(){
+  function initFeedback(prefix, source){
+    const stars   = document.querySelectorAll('#fb-stars-'+prefix+' .fb-star');
+    const extra   = document.getElementById('fb-extra-'+prefix);
+    const thanks  = document.getElementById('fb-thanks-'+prefix);
+    const textEl  = document.getElementById('fb-text-'+prefix);
+    const btnSkip = document.getElementById('fb-skip-'+prefix);
+    const btnSend = document.getElementById('fb-send-'+prefix);
+    let selected  = 0;
+
+    function paint(n){
+      stars.forEach((s,i)=>{ s.classList.toggle('on', i<n); });
+    }
+
+    stars.forEach((s,i)=>{
+      s.addEventListener('mouseenter',()=>paint(i+1));
+      s.addEventListener('mouseleave',()=>paint(selected));
+      s.addEventListener('click',()=>{
+        selected = i+1;
+        paint(selected);
+        extra.style.display='block';
+      });
+    });
+
+    async function send(withComment){
+      const comment = withComment ? (textEl?.value||'') : '';
+      extra.style.display='none';
+      thanks.style.display='block';
+      if(!selected) return;
+      try{
+        await fetch('/api/feedback',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({stars:selected, comment, source})
+        });
+      }catch(_){}
+    }
+
+    btnSkip.addEventListener('click',()=>send(false));
+    btnSend.addEventListener('click',()=>send(true));
+  }
+
+  initFeedback('f1','cv');
+  initFeedback('f2','scoring');
+})();
 </script>
 
 <!-- ================================================================
