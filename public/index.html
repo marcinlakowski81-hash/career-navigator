@@ -864,12 +864,12 @@ GoWork ponizej 2.0 to czerwona flaga. Upadlosc w grupie = WYSOKIE ryzyko.`;
      Zgodnie z instrukcją Macieja Lisa (sekcja 8 dokumentu wdrożeniowego):
      - GA i Clarity uruchamiają się TYLKO po zgodzie na cookies analityczne
      - Clarity wyłączona na stronie z narzędziem (per rekomendacja prawnika)
-     - Placeholdery: zastąp G-XXXXXXXXXX swoim ID Google Analytics
+     - Placeholdery: zastąp G-KMWN0HTYZ8 swoim ID Google Analytics
      ================================================================ -->
 
 <!-- GOOGLE ANALYTICS — ładowane warunkowo po zgodzie -->
-<!-- UWAGA: zastąp G-XXXXXXXXXX swoim rzeczywistym ID GA4 -->
-<script id="ga-script" data-src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<!-- UWAGA: zastąp G-KMWN0HTYZ8 swoim rzeczywistym ID GA4 -->
+<script id="ga-script" data-src="https://www.googletagmanager.com/gtag/js?id=G-KMWN0HTYZ8"></script>
 <script id="ga-init">
 /* GA inicjalizowane tylko po zgodzie — nie uruchamia się tutaj automatycznie */
 window.dataLayer = window.dataLayer || [];
@@ -932,7 +932,7 @@ function gtag(){dataLayer.push(arguments);}
    ================================================================ */
 (function(){
   const STORAGE_KEY = 'cn_cookie_consent';
-  const GA_ID = 'G-XXXXXXXXXX'; // ← zastąp swoim ID GA4 gdy będziesz mieć konto
+  const GA_ID = 'G-KMWN0HTYZ8'; // ← zastąp swoim ID GA4 gdy będziesz mieć konto
 
   const banner  = document.getElementById('cn-cookie-banner');
   const panel   = document.getElementById('cn-cookie-panel');
@@ -953,7 +953,7 @@ function gtag(){dataLayer.push(arguments);}
 
   /* --- Uruchom Google Analytics --- */
   function loadGA(){
-    if(GA_ID === 'G-XXXXXXXXXX') return; // placeholder — nie ładuj
+    if(!GA_ID) return;
     if(document.getElementById('ga-loaded')) return; // już załadowane
     const s = document.createElement('script');
     s.id  = 'ga-loaded';
