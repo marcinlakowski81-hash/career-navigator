@@ -1,83 +1,605 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Polityka prywatności — AI Management Academy / Career Navigator</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-  :root{--paper:#f6f1e7;--paper-2:#fffdf8;--ink:#16263f;--ink-soft:#3d4f68;--muted:#7a7060;--line:#e3dbcb;--gold:#b88a32;--gold-deep:#9a6f1f;}
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:var(--ink);line-height:1.6;background:var(--paper);padding:40px 20px}
-  .wrap{max-width:760px;margin:0 auto;background:var(--paper-2);border:1px solid var(--line);border-radius:18px;padding:40px 38px;box-shadow:0 18px 50px -28px rgba(22,38,63,.4)}
-  h1{font-family:'Fraunces',serif;font-weight:600;font-size:1.9rem;margin-bottom:6px}
-  .updated{color:var(--muted);font-size:.85rem;margin-bottom:28px}
-  h2{font-family:'Fraunces',serif;font-weight:600;font-size:1.2rem;color:var(--ink);margin:26px 0 8px;padding-top:10px;border-top:1px solid var(--line)}
-  h2.hl{color:var(--gold-deep)}
-  p{margin:8px 0;color:var(--ink-soft)}
-  ul{margin:8px 0 8px 22px;color:var(--ink-soft)}
-  li{margin:5px 0}
-  a{color:var(--gold-deep);font-weight:600}
-  .box{background:#faf5ea;border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:10px;padding:14px 16px;margin:14px 0;font-size:.94rem}
-  .foot{margin-top:30px;padding-top:16px;border-top:1px solid var(--line);color:var(--muted);font-size:.82rem;text-align:center}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Polityka prywatności i cookies — Career Navigator / W Punkt CV</title>
+  <style>
+  .cn-legal {
+    --cn-navy: #10213f;
+    --cn-gold: #b98622;
+    --cn-gold-soft: #e6d1a5;
+    --cn-cream: #faf7ef;
+    --cn-card: #fffdf8;
+    --cn-border: #e9dcc6;
+    --cn-muted: #5f6470;
+    box-sizing: border-box;
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 32px 20px 56px;
+    color: var(--cn-navy);
+    font-family: ui-serif, Georgia, "Times New Roman", serif;
+    line-height: 1.72;
+    font-size: 16px;
+  }
+  .cn-legal * { box-sizing: border-box; }
+  .cn-legal-card {
+    background: var(--cn-card);
+    border: 1px solid var(--cn-border);
+    border-radius: 18px;
+    box-shadow: 0 18px 45px rgba(16, 33, 63, 0.08);
+    padding: 38px;
+    overflow-x: auto;
+  }
+  .cn-legal h1 {
+    margin: 0 0 18px;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    color: var(--cn-navy);
+    font-weight: 800;
+  }
+  .cn-legal h2 {
+    margin: 42px 0 16px;
+    padding-top: 18px;
+    border-top: 1px solid var(--cn-border);
+    font-size: clamp(1.45rem, 2.4vw, 2rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--cn-navy);
+    font-weight: 800;
+  }
+  .cn-legal h3 {
+    margin: 32px 0 14px;
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 0.98rem;
+    line-height: 1.35;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--cn-gold);
+    font-weight: 800;
+  }
+  .cn-legal p { margin: 0 0 14px; }
+  .cn-legal strong { font-weight: 800; }
+  .cn-legal a {
+    color: var(--cn-gold);
+    font-weight: 700;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+  .cn-legal ul, .cn-legal ol {
+    margin: 10px 0 18px 1.4rem;
+    padding: 0;
+  }
+  .cn-legal li { margin: 6px 0; }
+  .cn-legal table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 18px 0 30px;
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 0.95rem;
+    line-height: 1.62;
+    border: 1px solid var(--cn-border);
+    border-radius: 14px;
+    overflow: hidden;
+    background: #fffaf0;
+  }
+  .cn-legal th, .cn-legal td {
+    vertical-align: top;
+    text-align: left;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--cn-border);
+  }
+  .cn-legal tr:last-child th,
+  .cn-legal tr:last-child td { border-bottom: 0; }
+  .cn-legal th:first-child,
+  .cn-legal td:first-child {
+    width: 30%;
+    color: var(--cn-navy);
+    background: #f7eedf;
+    font-weight: 800;
+  }
+  .cn-legal th p, .cn-legal td p { margin: 0 0 10px; }
+  .cn-legal th p:last-child, .cn-legal td p:last-child { margin-bottom: 0; }
+  .cn-legal blockquote {
+    margin: 18px 0;
+    padding: 16px 18px;
+    border-left: 4px solid var(--cn-gold);
+    background: #fff7e7;
+    border-radius: 12px;
+  }
+  @media (max-width: 760px) {
+    .cn-legal { padding: 22px 12px 40px; font-size: 15px; }
+    .cn-legal-card { padding: 24px 16px; border-radius: 14px; }
+    .cn-legal table,
+    .cn-legal thead,
+    .cn-legal tbody,
+    .cn-legal tr,
+    .cn-legal th,
+    .cn-legal td {
+      display: block;
+      width: 100% !important;
+    }
+    .cn-legal tr { border-bottom: 1px solid var(--cn-border); }
+    .cn-legal tr:last-child { border-bottom: 0; }
+    .cn-legal th, .cn-legal td { border-bottom: 0; padding: 13px 14px; }
+    .cn-legal th:first-child, .cn-legal td:first-child { background: #f7eedf; }
+  }
 </style>
+  <style>
+    body {
+      margin: 0;
+      background: #f4eee3;
+    }
+  </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>Polityka prywatności</h1>
-  <div class="updated">Ostatnia aktualizacja: maj 2026</div>
+<section class="cn-legal">
+  <article class="cn-legal-card">
+<h1>POLITYKA PRYWATNOŚCI I COOKIES</h1>
+<p style="display:inline-block;margin:0 0 24px;padding:8px 14px;background:#f4eadb;border:1px solid #e3d4bf;border-radius:999px;color:#5d523f;font-size:14px;font-family:ui-sans-serif,system-ui,sans-serif;">obowiązuje od 18 czerwca 2026 r.</p>
+<p><strong>Droga Użytkowniczko, drogi Użytkowniku,</strong></p>
+<p>dbamy o Twoją prywatność i chcemy, aby korzystanie z narzędzia Career Navigator było dla Ciebie zrozumiałe i bezpieczne. Dlatego w tej Polityce wyjaśniamy:</p>
+<ul>
+<li><p>kto jest administratorem Twoich danych osobowych;</p></li>
+<li><p>jakie dane możemy przetwarzać;</p></li>
+<li><p>w jakich celach to robimy;</p></li>
+<li><p>jak działa przetwarzanie danych w narzędziu Career Navigator;</p></li>
+<li><p>kiedy dane mogą być przekazywane do dostawców technologicznych, w tym dostawcy AI;</p></li>
+<li><p>jakie prawa Ci przysługują;</p></li>
+<li><p>jak korzystamy z plików cookies.</p></li>
+</ul>
+<p>Career Navigator jest obecnie udostępniany w wersji testowej, bezpłatnie. Narzędzie może być rozwijane, dlatego Polityka może zostać zaktualizowana, zwłaszcza przed uruchomieniem płatnego dostępu lub nowych funkcji.</p>
+<h2>Administrator danych osobowych</h2>
+<p>Administratorem Twoich danych osobowych jest Marcin Łąkowski, osoba fizyczna prowadząca projekt pod marką AI Management Academy oraz udostępniająca narzędzie Career Navigator / W Punkt CV.</p>
+<p>Możesz skontaktować się z Administratorem w sprawach dotyczących ochrony danych osobowych:</p>
+<p><strong>e-mail:</strong> <a href="mailto:aimanagementacademy.contact@gmail.com">aimanagementacademy.contact@gmail.com</a></p>
+<p><strong>adres korespondencyjny:</strong> Żyzna 21D/9, 09-410 Płock</p>
+<p>W dalszej części Polityki będziemy używać określenia <strong>„Administrator”</strong> albo <strong>„my”</strong>.</p>
+<h2>Jakie dane osobowe przetwarzamy, w jakich celach i na jakiej podstawie?</h2>
+<p>Jeżeli chcesz przetestować Career Navigator / W Punkt CV lub korzystać z naszej strony internetowej, musimy przetwarzać Twoje dane osobowe. Zapewniamy jednak, że robimy to zgodnie z przepisami o ochronie danych osobowych, w tym przede wszystkim zgodnie z RODO. Jeżeli zastanawiasz się, które z Twoich danych przetwarzamy, po co to robimy oraz czy mamy do tego prawo, sprawdź poniższe informacje.</p>
+<h3>PRZETWARZANIE DANYCH W CAREER NAVIGATORZE</h3>
+<table>
+<colgroup>
+<col style="width: 34%"/>
+<col style="width: 65%"/>
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Dlaczego przetwarzamy Twoje dane?</strong> </th>
+<th><p>Przetwarzamy dane, aby umożliwić Ci skorzystanie z narzędzia Career Navigator, tj. aby:</p>
+<ul>
+<li><p>porównać treść Twojego CV lub opisu doświadczenia z treścią ogłoszenia o pracę;</p></li>
+<li><p>wygenerować analizę dopasowania;</p></li>
+<li><p>zaproponować zmiany w CV;</p></li>
+<li><p>wskazać mocne i słabe strony aplikacji.</p></li>
+</ul></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Jakie dane przetwarzamy? </strong></td>
+<td><ul>
+<li><p>Dane, które samodzielnie wpiszesz lub wkleisz w pola narzędzia, w szczególności:</p>
+<ul>
+<li><p>opis doświadczenia zawodowego;</p></li>
+<li><p>treść CV lub fragmenty CV;</p></li>
+<li><p>informacje o kompetencjach, kwalifikacjach, wykształceniu i historii zawodowej;</p></li>
+<li><p>treść ogłoszenia o pracę;</p></li>
+<li><p>inne informacje, które dobrowolnie wpiszesz w formularzu.</p></li>
+</ul></li>
+<li><p>Nie wymagamy, abyś podawał / podawała dane identyfikujące Cię bezpośrednio, takie jak imię i nazwisko, numer telefonu, adres e-mail, adres zamieszkania, data urodzenia czy zdjęcie.</p></li>
+</ul></td>
+</tr>
+<tr class="even">
+<td><strong>Czego nie należy wpisywać do narzędzia?</strong></td>
+<td><p><strong>Nie wpisuj danych, które nie są potrzebne do wykonania analizy, w szczególności:</strong></p>
+<ul>
+<li><p>numeru PESEL;</p></li>
+<li><p>numeru dowodu osobistego lub paszportu;</p></li>
+<li><p>dokładnego adresu zamieszkania;</p></li>
+<li><p>prywatnego numeru telefonu, jeżeli nie jest potrzebny;</p></li>
+<li><p>danych o zdrowiu;</p></li>
+<li><p>informacji o niepełnosprawności;</p></li>
+<li><p>informacji o poglądach politycznych;</p></li>
+<li><p>informacji o wyznaniu lub przekonaniach światopoglądowych;</p></li>
+<li><p>informacji o przynależności do związków zawodowych;</p></li>
+<li><p>informacji o orientacji seksualnej;</p></li>
+<li><p>danych biometrycznych;</p></li>
+<li><p>informacji o karalności;</p></li>
+<li><p>danych dotyczących dzieci, rodziny lub innych osób.</p></li>
+</ul>
+<p><strong>Jeżeli mimo tego wpiszesz takie dane, mogą one zostać przetworzone w celu wygenerowania analizy, ponieważ narzędzie analizuje treść, którą samodzielnie podasz.</strong></p></td>
+</tr>
+<tr class="odd">
+<td><strong>Na jakiej podstawie? </strong></td>
+<td><p><strong>art. 6 ust. 1 lit. b RODO</strong>  </p>
+<p>Przepis ten pozwala na przetwarzanie danych osobowych, gdy jest to niezbędne do wykonania umowy zawartej z osobą, której dane dotyczą, lub do podjęcia działań w celu jej zawarcia. W tym przypadku chodzi o wykonanie bezpłatnej usługi online, z której chcesz skorzystać, czyli wygenerowanie analizy w Career Navigatorze.</p>
+<p><strong>art. 6 ust. 1 lit. f RODO</strong></p>
+<p>Przepis ten pozwala na przetwarzanie danych osobowych, jeżeli jest to konieczne dla wykonania prawnie uzasadnionego interesu. W tym przypadku naszym prawnie uzasadnionym interesem jest zapewnienie bezpieczeństwa narzędzia, obsługa ewentualnych problemów technicznych, rozwój i testowanie narzędzia oraz ochrona przed nadużyciami.</p>
+<p><strong>Art. 9 ust. 2 lit. a RODO</strong></p>
+<p>Przepis ten pozwala na przetwarzanie tzw. danych szczególnych kategorii, np. danych dotyczących zdrowia, niepełnosprawności, poglądów politycznych, wyznania, przynależności do związków zawodowych, orientacji seksualnej lub danych biometrycznych, jeżeli osoba, której dane dotyczą, wyrazi na to wyraźną zgodę.</p>
+<p><strong>Prosimy, aby nie wpisywać do Career Navigatora danych szczególnych kategorii, ponieważ nie są one potrzebne do wykonania analizy.</strong> Jeżeli mimo tego samodzielnie i dobrowolnie wpiszesz takie dane do narzędzia, podstawą ich przetwarzania będzie Twoja wyraźna zgoda udzielona przed uruchomieniem analizy. Zgoda obejmuje wyłącznie jednorazowe przetworzenie tych danych w celu wygenerowania analizy.</p></td>
+</tr>
+<tr class="even">
+<td><strong>Czy podanie tych danych jest konieczne?</strong></td>
+<td>Podanie tych danych jest dobrowolne, ale konieczne do korzystania z narzędzia Career Navigator / W Punkt CV. Jeżeli nie wkleisz treści CV, opisu doświadczenia albo ogłoszenia o pracę, narzędzie nie będzie mogło wygenerować wyniku.</td>
+</tr>
+<tr class="odd">
+<td><strong>Przez jaki czas będziemy przetwarzać te dane?</strong> </td>
+<td>Po naszej stronie nie tworzymy kont użytkowników i nie zapisujemy treści wpisanych do narzędzia ani wyników analizy w bazie danych. Dane są przetwarzane technicznie w celu wygenerowania odpowiedzi i wyświetlenia jej w Twojej przeglądarce. Mogą być jednak czasowo przetwarzane przez dostawców technologicznych niezbędnych do działania narzędzia, w tym dostawcę infrastruktury i dostawcę modelu AI, zgodnie z ich zasadami technicznymi i umowami.</td>
+</tr>
+</tbody>
+</table>
+<h3>PRZETWARZANIE DANYCH PRZEZ DOSTAWCĘ AI</h3>
+<table>
+<colgroup>
+<col style="width: 37%"/>
+<col style="width: 62%"/>
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Dlaczego przetwarzamy Twoje dane?</strong> </th>
+<th>Career Navigator korzysta z zewnętrznego modelu AI, aby wygenerować analizę na podstawie treści, którą wpiszesz w narzędziu. Dostawcą modelu AI jest: Anthropic, PBC, z siedzibą w San Francisco, USA. Korzystamy z modelu Claude poprzez API Anthropic.</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Jakie dane są przekazywane do Anthropic? </strong></td>
+<td><p>Do Anthropic mogą być przekazywane:</p>
+<ul>
+<li><p>treść wpisana przez Ciebie w pole dotyczące CV lub doświadczenia zawodowego;</p></li>
+<li><p>treść ogłoszenia o pracę;</p></li>
+<li><p>techniczne dane niezbędne do obsługi zapytania do API.</p></li>
+</ul>
+<p>Nie przekazujemy do Anthropic danych, których samodzielnie nie wpiszesz do narzędzia, z zastrzeżeniem danych technicznych koniecznych do działania usługi.</p>
+<p>Anthropic przetwarza dane w celu wygenerowania odpowiedzi, czyli analizy przygotowanej przez model AI.</p></td>
+</tr>
+<tr class="even">
+<td><strong>Czy dane są używane do trenowania modeli AI?</strong></td>
+<td>Zgodnie z informacjami publikowanymi przez Anthropic, dane przesyłane przez API w produktach komercyjnych nie są domyślnie wykorzystywane do trenowania modeli AI. Może to jednak zależeć od ustawień, sposobu korzystania z usługi albo przekazania feedbacku do dostawcy.</td>
+</tr>
+<tr class="odd">
+<td><strong>Gdzie dane mogą być przetwarzane?</strong></td>
+<td>Anthropic ma siedzibę w USA. Korzystanie z Anthropic oznacza, że dane mogą być przekazywane poza Europejski Obszar Gospodarczy, w szczególności do USA.</td>
+</tr>
+<tr class="even">
+<td><strong>Jaka jest podstawa przekazania danych poza EOG?</strong></td>
+<td>Przekazanie danych do Anthropic odbywa się na podstawie mechanizmów przewidzianych w dokumentacji i umowach Anthropic, w szczególności umowy powierzenia przetwarzania danych oraz standardowych klauzul umownych, jeżeli są wymagane dla danego transferu.</td>
+</tr>
+<tr class="odd">
+<td><strong>Jak długo Anthropic może przechowywać dane?</strong></td>
+<td>Zgodnie z informacjami publikowanymi przez Anthropic, w przypadku API inputy i outputy są standardowo usuwane z backendu w ciągu 30 dni od ich otrzymania lub wygenerowania, z zastrzeżeniem wyjątków, np. gdy dłuższe przechowywanie jest wymagane prawem, potrzebne do egzekwowania zasad bezpieczeństwa lub wynika z innych ustaleń.</td>
+</tr>
+</tbody>
+</table>
+<h3>PRZETWARZANIE DANYCH ZWIĄZANYCH Z ANALITYKĄ</h3>
+<table>
+<colgroup>
+<col style="width: 37%"/>
+<col style="width: 62%"/>
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Dlaczego przetwarzamy Twoje dane?</strong> </th>
+<th><p>Dane przetwarzamy, aby:</p>
+<ul>
+<li><p>analizować Twoją aktywność na naszej stronie internetowej.</p></li>
+</ul></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Jakie dane przetwarzamy? </strong></td>
+<td><ul>
+<li><p>Data i godzina odwiedzin</p></li>
+<li><p>IP </p></li>
+<li><p>Rodzaj systemu operacyjnego urządzenia </p></li>
+<li><p>Przybliżona lokalizacja (kraj pochodzenia) </p></li>
+<li><p>Czas spędzony na naszej stronie internetowej </p></li>
+<li><p>Działania podejmowane na stronie </p></li>
+<li><p>Odwiedzane podstrony </p></li>
+</ul></td>
+</tr>
+<tr class="even">
+<td><strong>Na jakiej podstawie? </strong></td>
+<td><p><strong>art. 6 ust. 1 lit. a RODO</strong></p>
+<p>Przepis ten pozwala na przetwarzanie danych osobowych, jeżeli wyrazisz na to odpowiednią zgodę. W tym przypadku chodzi o zgodę na stosowanie plików cookies analitycznych oraz podobnych technologii, które pozwalają nam analizować sposób korzystania ze strony internetowej i rozwijać narzędzie.</p>
+<p><strong>art. 6 ust. 1 lit. f RODO</strong></p>
+<p>Przepis ten pozwala na przetwarzanie danych osobowych, jeżeli jest to konieczne dla wykonania prawnie uzasadnionego interesu. W tym przypadku naszym prawnie uzasadnionym interesem jest uzyskanie informacji o Twojej aktywności na naszej stronie internetowej, jej optymalizacja oraz dostosowanie treści do odbiorców. </p></td>
+</tr>
+<tr class="odd">
+<td><strong>Czy podanie tych danych jest konieczne?</strong></td>
+<td>Podanie tych danych jest dobrowolne. Brak zgody na cookies analityczne nie wpływa na możliwość korzystania ze strony internetowej ani z Career Navigatora, ale może ograniczyć naszą możliwość analizy działania strony i rozwijania narzędzia.</td>
+</tr>
+<tr class="even">
+<td><strong>Przez jaki czas będziemy przetwarzać te dane? </strong></td>
+<td>Dane będą przetwarzane do czasu osiągnięcia celu analitycznego, nie dłużej jednak niż przez okres ważności danego pliku cookies albo do czasu wycofania przez Ciebie zgody na cookies analityczne.</td>
+</tr>
+</tbody>
+</table>
+<h3>PRZETWARZANIE ZWIĄZANE ZE STRONĄ INTERNETOWĄ I NARZĘDZIEM</h3>
+<table>
+<colgroup>
+<col style="width: 38%"/>
+<col style="width: 61%"/>
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Dlaczego przetwarzamy Twoje dane? </strong></th>
+<th><p>Dane przetwarzamy, aby:</p>
+<ul>
+<li><p>zapewnić działanie strony internetowej i narzędzia;</p></li>
+<li><p>zapewnić bezpieczeństwo serwisu;</p></li>
+<li><p>diagnozować błędy; chronić narzędzie przed nadużyciami;</p></li>
+<li><p>zapewnić prawidłową komunikację między przeglądarką, backendem i dostawcą AI.</p></li>
+</ul></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Jakie dane przetwarzamy?</strong></td>
+<td><ul>
+<li><p>adres IP;</p></li>
+<li><p>datę i godzinę połączenia;</p></li>
+<li><p>informacje o przeglądarce i urządzeniu;</p></li>
+<li><p>dane techniczne dotyczące żądań do serwera;</p></li>
+<li><p>logi techniczne;</p></li>
+<li><p>informacje o błędach działania narzędzia.</p></li>
+</ul></td>
+</tr>
+<tr class="even">
+<td><strong>Na jakiej podstawie? </strong></td>
+<td><p><strong>art. 6 ust. 1 lit. f RODO</strong></p>
+<p>Przepis ten pozwala na przetwarzanie danych osobowych, jeżeli jest to konieczne dla wykonania prawnie uzasadnionego interesu. W tym przypadku naszym prawnie uzasadnionym interesem jest utrzymanie, zabezpieczenie i rozwijanie strony oraz narzędzia.</p></td>
+</tr>
+<tr class="odd">
+<td><strong>Czy podanie tych danych jest konieczne?</strong></td>
+<td>Podanie tych danych jest dobrowolne, ale niezbędne, aby strona i narzędzie działały prawidłowo. Bez tych danych korzystanie ze strony lub narzędzia może być niemożliwe albo utrudnione.</td>
+</tr>
+<tr class="even">
+<td><strong>Przez jaki czas będziemy przetwarzać te dane? </strong></td>
+<td>Dane techniczne przetwarzamy przez czas niezbędny do zapewnienia działania i bezpieczeństwa strony oraz narzędzia, a następnie przez okres potrzebny do wyjaśnienia ewentualnych błędów, incydentów lub roszczeń.</td>
+</tr>
+</tbody>
+</table>
+<h3>PRZETWARZANIE ZWIĄZANE Z OBRONĄ ROSZCZEŃ</h3>
+<table>
+<colgroup>
+<col style="width: 36%"/>
+<col style="width: 63%"/>
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Dlaczego przetwarzamy Twoje dane?</strong> </th>
+<th><p>Dane przetwarzamy, aby: </p>
+<ul>
+<li><p>móc ustalić, dochodzić lub bronić się przed roszczeniami;</p></li>
+<li><p>wykazać przebieg korzystania z narzędzia lub kontaktu z nami.</p></li>
+</ul></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Jakie dane przetwarzamy? </strong></td>
+<td><ul>
+<li><p>dane kontaktowe;</p></li>
+<li><p>treść korespondencji;</p></li>
+<li><p>informacje techniczne;</p></li>
+<li><p>informacje dotyczące korzystania z narzędzia;</p></li>
+<li><p>inne dane niezbędne do wyjaśnienia sprawy.</p></li>
+</ul></td>
+</tr>
+<tr class="even">
+<td><strong>Na jakiej podstawie? </strong></td>
+<td><p><strong>art. 6 ust. 1 lit. f RODO</strong></p>
+<p>Przepis ten pozwala na przetwarzanie danych osobowych, jeżeli jest to konieczne dla wykonania prawnie uzasadnionego interesu. W tym przypadku naszym prawnie uzasadnionym interesem jest posiadanie takich danych, które umożliwiają nam ustalenie przysługujących nam roszczeń, ich dochodzenie oraz bronienie się przed roszczeniami innych osób.</p></td>
+</tr>
+<tr class="odd">
+<td><strong>Czy podanie tych danych jest konieczne?</strong></td>
+<td>Podanie tych danych jest dobrowolne, ale niezbędne do ustalenia, dochodzenia oraz obrony przed roszczeniami. Konsekwencją niepodania tych danych będzie niemożność podjęcia tych działań. </td>
+</tr>
+<tr class="even">
+<td><strong>Przez jaki czas będziemy przetwarzać te dane? </strong></td>
+<td>Dane przetwarzamy przez okres przedawnienia roszczeń albo przez czas trwania postępowań, jeżeli takie postępowania zostaną wszczęte.</td>
+</tr>
+</tbody>
+</table>
+<h3>PRZETWARZANIE ZWIĄZANE Z SOCIAL MEDIA</h3>
+<table>
+<colgroup>
+<col style="width: 35%"/>
+<col style="width: 64%"/>
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Dlaczego przetwarzamy Twoje dane?</strong> </th>
+<th>Przetwarzamy dane, aby prowadzić i obsługiwać nasze profile w social media, w szczególności na LinkedIn oraz ewentualnie innych platformach, na których prowadzimy komunikację dotyczącą AI Management Academy lub Career Navigatora.</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Jakie dane przetwarzamy? </strong></td>
+<td><ul>
+<li><p>Nazwę Twojego profilu</p></li>
+<li><p>Wizerunek, który umieściłeś na publicznych zdjęciach</p></li>
+<li><p>Dane umieszczone w komentarzach pod naszymi postami lub w prywatnych wiadomościach</p></li>
+<li><p>Reakcje na publikowane przez nas treści</p></li>
+<li><p>Dane statystyczne udostępniane przez platformy społecznościowe.</p></li>
+</ul></td>
+</tr>
+<tr class="even">
+<td><strong>Na jakiej podstawie? </strong></td>
+<td><p><strong>art. 6 ust. 1 lit. f RODO</strong></p>
+<p>Przepis ten pozwala na przetwarzanie danych osobowych, jeżeli jest to konieczne dla wykonania prawnie uzasadnionego interesu. W tym przypadku naszym prawnie uzasadnionym interesem jest prowadzenie komunikacji, promocji projektu i zarządzaniu profilami w social media.</p></td>
+</tr>
+<tr class="odd">
+<td><strong>Czy podanie tych danych jest konieczne?</strong></td>
+<td>Podanie danych jest dobrowolne, ale korzystanie z funkcji social media może powodować, że platforma społecznościowa udostępni nam określone informacje, np. nazwę profilu lub treść komentarza.</td>
+</tr>
+<tr class="even">
+<td><strong>Przez jaki czas będziemy przetwarzać te dane? </strong></td>
+<td>Dane przetwarzamy przez czas prowadzenia komunikacji w social media, chyba że wcześniej usuniesz komentarz, wiadomość lub wniesiesz skuteczny sprzeciw.</td>
+</tr>
+</tbody>
+</table>
+<h3>PRZETWARZANIE DANYCH W ZWIĄZKU Z TESTAMI I FEEDBACKIEM</h3>
+<table>
+<colgroup>
+<col style="width: 35%"/>
+<col style="width: 64%"/>
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Dlaczego przetwarzamy Twoje dane?</strong> </th>
+<th><p>Jeżeli przekażesz nam opinię o narzędziu, zgłosisz błąd albo opiszesz swoje doświadczenia z testów, możemy przetwarzać dane, aby:</p>
+<ul>
+<li><p>zebrać feedback dotyczący działania Career Navigatora;</p></li>
+<li><p>poprawić narzędzie;</p></li>
+<li><p>zweryfikować, czy narzędzie spełnia potrzeby użytkowników;</p></li>
+<li><p>odpowiedzieć na Twoją wiadomość; rozwiązać zgłoszony problem.</p></li>
+</ul></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Jakie dane przetwarzamy? </strong></td>
+<td><ul>
+<li><p>treść feedbacku;</p></li>
+<li><p>adres e-mail lub dane kontaktowe, jeżeli je podasz;</p></li>
+<li><p>nazwę profilu w social media, jeżeli kontaktujesz się przez social media;</p></li>
+<li><p>informacje techniczne dotyczące zgłoszonego błędu;</p></li>
+<li><p>inne dane, które dobrowolnie przekażesz. </p></li>
+</ul></td>
+</tr>
+<tr class="even">
+<td><strong>Na jakiej podstawie? </strong></td>
+<td><p><strong>art. 6 ust. 1 lit. f RODO</strong> </p>
+<p>Przepis ten pozwala na przetwarzanie danych osobowych, jeżeli jest to konieczne dla wykonania prawnie uzasadnionego interesu. W tym przypadku naszym prawnie uzasadnionym interesem jest testowanie, rozwijanie i poprawianie narzędzia.</p></td>
+</tr>
+<tr class="odd">
+<td><strong>Czy podanie tych danych jest konieczne?</strong></td>
+<td>Podanie danych jest dobrowolne. Jeżeli jednak chcesz, abyśmy odpowiedzieli na feedback lub zgłoszenie, potrzebujemy danych umożliwiających kontakt.</td>
+</tr>
+<tr class="even">
+<td><strong>Przez jaki czas będziemy przetwarzać te dane?</strong> </td>
+<td>Dane przetwarzamy przez czas potrzebny do obsługi feedbacku, zakończenia testów i rozwoju narzędzia, a następnie możemy przechowywać informacje w formie zanonimizowanej, statystycznej lub zbiorczej.</td>
+</tr>
+</tbody>
+</table>
+<h3>PRZETWARZANIE ZWIĄZANE Z NEWSLETTEREM</h3>
+<table>
+<colgroup>
+<col style="width: 34%"/>
+<col style="width: 65%"/>
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Dlaczego przetwarzamy Twoje dane?</strong> </th>
+<th><p>Dane przetwarzamy w celu: </p>
+<ul>
+<li><p>zawarcia i wykonywania umowy o newsletter.</p></li>
+</ul></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Jakie dane przetwarzamy? </strong></td>
+<td><ul>
+<li><p>Adres e-mail </p></li>
+<li><p>Imię  </p></li>
+</ul></td>
+</tr>
+<tr class="even">
+<td><strong>Na jakiej podstawie? </strong></td>
+<td><p><strong>art. 6 ust. 1 lit. b RODO</strong> </p>
+<p>Przepis ten pozwala na przetwarzanie danych osobowych, gdy jest to niezbędne do wykonania umowy zawartej z osobą, której dotyczą dane lub do podjęcia działań w celu jej zawarcia, w tym przypadku chodzi o umowę o newsletter.  </p>
+<p><strong>art. 6 ust. 1 lit. f RODO</strong> </p>
+<p>Przepis ten pozwala na przetwarzanie danych osobowych, jeżeli jest to konieczne dla wykonania prawnie uzasadnionego interesu. W tym przypadku naszym prawnie uzasadnionym interesem jest promowanie naszych usług, produktów, a także informowanie o promocjach i wydarzeniach. </p></td>
+</tr>
+<tr class="odd">
+<td><strong>Czy podanie tych danych jest konieczne?</strong></td>
+<td>Podanie tych danych jest dobrowolne, ale niezbędne do otrzymywania naszego newsletteru. Konsekwencją niepodania tych danych będzie niemożność podjęcia tych działań. </td>
+</tr>
+<tr class="even">
+<td><strong>Przez jaki czas będziemy przetwarzać te dane? </strong></td>
+<td>Dane będą przetwarzane przez czas korzystania z newslettera, tj. do momentu rezygnacji z newslettera, wycofania zgody na otrzymywanie komunikacji albo skutecznego wniesienia sprzeciwu wobec przetwarzania danych w celach marketingowych. Po rezygnacji z newslettera możemy przechowywać dane przez okres niezbędny do wykazania, że zapis na newsletter oraz wysyłka komunikacji odbywały się zgodnie z prawem, a także przez okres przedawnienia ewentualnych roszczeń.</td>
+</tr>
+</tbody>
+</table>
+<h2>Odbiorcy danych osobowych</h2>
+<p>Twoje dane mogą być przekazywane podmiotom, które pomagają nam prowadzić stronę, rozwijać narzędzie i zapewniać jego działanie.</p>
+<p>Odbiorcami danych mogą być w szczególności:</p>
+<ul>
+<li><p>dostawca modelu AI: <strong>Anthropic, PBC</strong>;</p></li>
+<li><p>dostawca infrastruktury hostingowej / backendowej: <strong>Vercel</strong>;</p></li>
+<li><p>dostawcy usług IT;</p></li>
+<li><p>dostawcy usług poczty elektronicznej;</p></li>
+<li><p>dostawcy narzędzi do analityki lub monitorowania błędów: jeżeli będą wykorzystywani;</p></li>
+<li><p>doradcy prawni, księgowi lub inni profesjonalni doradcy;</p></li>
+<li><p>organy publiczne, jeżeli wynika to z obowiązujących przepisów.</p></li>
+</ul>
+<p>W celu analizy ruchu na stronie internetowej oraz sposobu korzystania z naszych treści możemy korzystać z narzędzi analitycznych, takich jak Google Analytics oraz Microsoft Clarity. Google Analytics pozwala nam analizować m.in. liczbę odwiedzin, odwiedzane podstrony, źródła wejść na stronę oraz podstawowe informacje techniczne dotyczące urządzenia i przeglądarki. Microsoft Clarity pozwala nam analizować sposób korzystania ze strony, w szczególności z wykorzystaniem map cieplnych, wskaźników behawioralnych oraz powtórek sesji.</p>
+<p>Narzędzie to może pomagać nam identyfikować problemy techniczne i poprawiać użyteczność strony. Narzędzia analityczne uruchamiamy wyłącznie po uzyskaniu Twojej zgody na cookies analityczne, chyba że dane są przetwarzane wyłącznie w sposób niewymagający takiej zgody zgodnie z obowiązującymi przepisami.</p>
+<p>Nie wykorzystujemy narzędzi analitycznych do celowego zbierania treści wpisywanych przez Ciebie w pola Career Navigatora ani wyniku wygenerowanej analizy. Dostawcy narzędzi analitycznych mogą przetwarzać dane jako nasi dostawcy usług albo jako odrębni administratorzy w zakresie, w jakim samodzielnie określają cele i sposoby przetwarzania danych zgodnie z własnymi zasadami prywatności.</p>
+<h2>Przekazywanie danych do państw trzecich (poza Europejski Obszar Gospodarczy)</h2>
+<p>W związku z korzystaniem z zewnętrznych dostawców technologicznych, w szczególności Anthropic PBC, Vercel, Google Analytics oraz Microsoft Clarity, Twoje dane mogą być przekazywane poza Europejski Obszar Gospodarczy, w szczególności do USA.</p>
+<p>Jeżeli dane są przekazywane poza Europejski Obszar Gospodarczy, stosujemy odpowiednie mechanizmy zabezpieczające przewidziane przez przepisy o ochronie danych osobowych.</p>
+<p>W przypadku przekazywania danych do USA podstawą transferu może być decyzja Komisji Europejskiej stwierdzająca odpowiedni stopień ochrony danych osobowych, jeżeli dany odbiorca znajduje się na liście podmiotów aktywnie certyfikowanych w ramach EU-US Data Privacy Framework. Lista ta jest prowadzona przez Amerykański Departament Handlu i jest dostępna pod adresem: <a href="https://www.dataprivacyframework.gov/list">https://www.dataprivacyframework.gov/list</a>.</p>
+<p>Jeżeli w danym przypadku decyzja Komisji Europejskiej nie ma zastosowania, podstawą przekazania danych mogą być inne zabezpieczenia przewidziane przez przepisy, w szczególności standardowe klauzule umowne oraz umowy powierzenia przetwarzania danych zawarte z dostawcami usług.</p>
+<h2>Zautomatyzowane przetwarzanie i AI</h2>
+<p>Career Navigator generuje wynik automatycznie z wykorzystaniem modelu AI. Wynik może obejmować m.in.:</p>
+<ul>
+<li><p>analizę dopasowania CV lub opisu doświadczenia do ogłoszenia;</p></li>
+<li><p>propozycje zmian w CV;</p></li>
+<li><p>ocenę mocnych i słabych stron aplikacji.</p></li>
+</ul>
+<p>Wynik ma charakter pomocniczy, orientacyjny i edukacyjny. Może zawierać błędy, nieścisłości albo uproszczenia. Przed wykorzystaniem wyniku, np. przed wysłaniem CV do pracodawcy, należy samodzielnie zweryfikować wygenerowaną treść.</p>
+<p>Career Navigator nie jest narzędziem dla pracodawców do selekcji kandydatów, filtrowania aplikacji ani podejmowania decyzji rekrutacyjnych. Narzędzie jest przeznaczone dla osoby poszukującej pracy i ma pomóc jej w samodzielnym przygotowaniu aplikacji.</p>
+<p>Nie podejmujemy wobec Ciebie decyzji wywołujących skutki prawne lub podobnie istotnie na Ciebie wpływających wyłącznie na podstawie zautomatyzowanego przetwarzania. To Ty decydujesz, czy i w jaki sposób wykorzystasz wynik analizy.</p>
+<h2>Twoje prawa</h2>
+<p>Z uwagi na to, że przetwarzamy Twoje dane osobowe, przysługują Ci takie prawa jak: </p>
+<ul><li> prawo uzyskania od nas potwierdzenia, czy przetwarzane są przez nas Twoje dane osobowe. Jeżeli faktycznie Twoje dane przetwarzamy, to jesteś uprawniony do otrzymania kopii tych danych („prawo dostępu”);</li><li> prawo do żądania sprostowania Twoich danych, które są nieprawidłowe lub niekompletne; </li><li> prawo do usunięcia Twoich danych osobowych, jeżeli nie mamy już podstawy prawnej do ich przetwarzania lub dane nie są już nam potrzebne (“prawo do bycia zapomnianym”); </li><li> prawo do ograniczenia przetwarzania Twoich danych, np. jeżeli uznasz, że Twoje dane są nieprawidłowe, ich przetwarzanie nie jest zgodne z prawem lub nie potrzebujemy już tych danych, masz prawo do zażądania, abyśmy nie przetwarzali ich w inny sposób niż poprzez ich przechowanie; </li><li> prawo do przeniesienia Twoich danych do innego administratora, jeżeli przetwarzamy Twoje dane na podstawie udzielonej przez Ciebie zgody, na podstawie zawartej z Tobą umowy, jeżeli zostaną wypełnione cele tej umowy lub umowa ta wygasła lub jeżeli przetwarzamy Twoje dane w sposób zautomatyzowany,</li><li> prawo sprzeciwu wobec przetwarzania Twoich danych osobowych w prawnie uzasadnionych celach, z przyczyn związanych z Twoją szczególną sytuacją, w tym wobec profilowania. Wówczas dokonujemy oceny istnienia ważnych, prawnie uzasadnionych podstaw do przetwarzania, nadrzędnych wobec interesów, praw i wolności osób, których dane dotyczą, lub podstaw do ustalenia, dochodzenia lub obrony roszczeń. Jeżeli zgodnie z oceną Twoje interesy będą ważniejsze od naszych interesów, będziemy zobowiązani zaprzestać przetwarzania danych w tych celach; </li><li> prawo cofnięcia zgody w każdym momencie i bez podawania przyczyny, które nie będzie miało wpływu na przetwarzanie Twoich danych przed cofnięciem tej zgody. Cofnięcie zgody spowoduje zaprzestanie przetwarzania przez nas danych osobowych w celu, w którym zgoda ta została wyrażona; </li><li> prawo do wniesienia skargi do Prezesa Urzędu Ochrony Danych Osobowych, jeżeli uznasz, że przetwarzanie danych narusza RODO. Szczegółowe informacje nt skargi: (https://uodo.gov.pl/pl/83/155).</li></ul>
+<p>Zwracamy uwagę, że w przypadku treści wpisanej do Career Navigatora realizacja niektórych praw może być ograniczona technicznie, jeżeli po naszej stronie nie zapisujemy treści CV, treści ogłoszenia ani wyniku analizy. Jeżeli dane nie są już przez nas przechowywane, możemy nie mieć technicznej możliwości ich odnalezienia, udostępnienia, sprostowania lub usunięcia.</p>
+<p>Jeżeli przetwarzanie danych odbywa się na podstawie zgody, możesz ją wycofać w dowolnym momencie. Wycofanie zgody nie wpływa jednak na zgodność z prawem przetwarzania dokonanego przed jej wycofaniem. W przypadku Career Navigatora dane wpisane do narzędzia są przetwarzane jednorazowo w celu wygenerowania analizy i nie są zapisywane przez Administratora w bazie danych, dlatego po zakończeniu analizy praktyczna możliwość cofnięcia skutków przetwarzania może być ograniczona.</p>
+<h2>Polityka plików cookies</h2>
+<p>Nasza strona internetowa korzysta z plików cookies, czyli niewielkich plików tekstowych zawierających dane informatyczne. Pliki te przechowane są w Twoim urządzeniu, z którego przeglądasz naszą stronę. Cookies pozwalają m. in. wyświetlać strony internetowe dostosowane do indywidualnych preferencji Użytkowników i zawierają najczęściej: </p>
+<ul>
+<li><p>adres strony internetowej,  </p></li>
+<li><p>czas przechowywania na urządzeniu Użytkownika, </p></li>
+<li><p>własny unikatowy identyfikator. </p></li>
+</ul>
+<p>Korzystamy z plików cookies, które są niezbędne do działania podstawowych funkcji witryny, jak i też z plików cookies podmiotów trzecich, dzięki którym analizujemy Twój ruch na naszej stronie internetowej. Będą one przechowywane w Twojej przeglądarce wyłącznie za Twoją zgodą i możesz w każdej chwili zrezygnować z nich. Konsekwencją rezygnacji może być, jednakże nieprawidłowe działanie naszej strony.  </p>
+<p>Na naszej stronie internetowej stosowane są następujące rodzaje cookies: </p>
+<table>
+<colgroup>
+<col style="width: 11%"/>
+<col style="width: 88%"/>
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>NIEZBĘDNE</strong>, o których już wyżej wskazywaliśmy.</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td></td>
+<td><strong>FUNKCJONALNE</strong>, czyli takie, które realizują pewne funkcje jak np. udostępnianie treści umieszczonych na stronie internetowej, czy na profilach social media.</td>
+</tr>
+<tr class="even">
+<td></td>
+<td><strong>ANALITYCZNE</strong>, które pozwalają nam sprawdzać liczbę odwiedzin, źródła wejść na stronę, odwiedzane podstrony oraz sposób korzystania ze strony. Tego typu dane wykorzystujemy do analizy działania strony, wykrywania problemów technicznych, poprawiania użyteczności oraz rozwijania Career Navigatora. Do tego celu możemy wykorzystywać narzędzia takie jak Google Analytics oraz Microsoft Clarity. Cookies analityczne są wykorzystywane wyłącznie po wyrażeniu przez Ciebie zgody.</td>
+</tr>
+</tbody>
+</table>
+<p>W Twojej przeglądarce możesz zmienić ustawienia dotyczące cookies oraz dokonać ich ręcznego usunięcia. Dokładne informacje o obsłudze plików cookies oraz konfiguracjach dostępnych w ustawieniach określonej przeglądarki stron internetowych można znaleźć w dziale pomocy danej przeglądarki. </p>
+<h2>Postanowienia końcowe</h2>
+<p>Zastrzegamy sobie prawo do wprowadzania zmian w niniejszej Polityce prywatności, na które może wpłynąć rozwój technologii internetowej, ewentualne zmiany prawa w zakresie ochrony danych osobowych oraz rozwój naszej strony internetowej. O wszelkich zmianach będziemy informować w sposób widoczny i zrozumiały.  </p>
+<p>Na naszej stronie internetowej mogą pojawiać się linki do innych stron. Takie strony internetowe działają niezależnie od nas i nie są w żaden sposób przez nas nadzorowane. Strony te mogą posiadać własne polityki dotyczące prywatności oraz regulaminy, z którymi zalecamy się zapoznać. </p>
 
-  <h2>1. Administrator danych</h2>
-  <p>Administratorem danych osobowych jest założyciel AI Management Academy, prowadzący działalność pod marką AI Management Academy, dostępny pod adresem: <a href="mailto:aimanagementacademy.contact@gmail.com">aimanagementacademy.contact@gmail.com</a>.</p>
-
-  <h2>2. Jakie dane zbieramy</h2>
-  <p>Dane mogą być przetwarzane wyłącznie, gdy:</p>
-  <ul>
-    <li>Skontaktujesz się z nami przez LinkedIn lub e-mail — przetwarzamy Twoje imię, nazwisko i adres e-mail w celu odpowiedzi na wiadomość.</li>
-    <li>Pobierzesz nasze bezpłatne narzędzia — pliki są udostępniane bezpośrednio, bez rejestracji.</li>
-    <li>Kupisz produkt cyfrowy (np. ebook) — dane transakcyjne są przetwarzane przez zewnętrznego operatora płatności.</li>
-    <li>Skorzystasz z narzędzia <strong>Career Navigator</strong> — przetwarzamy treść, którą samodzielnie wklejasz (opis doświadczenia/CV oraz treść ogłoszenia). Szczegóły w pkt. 6.</li>
-  </ul>
-
-  <h2>3. Cel przetwarzania danych</h2>
-  <ul>
-    <li>Odpowiedzi na zapytania i prowadzenia korespondencji.</li>
-    <li>Realizacji zamówień na produkty cyfrowe (ebook, kursy).</li>
-    <li>Wykonania usług konsultingowych i audytowych.</li>
-    <li>Wykonania analizy CV i dopasowania do oferty pracy w narzędziu Career Navigator.</li>
-  </ul>
-
-  <h2>4. Podstawa prawna</h2>
-  <p>Przetwarzanie odbywa się na podstawie art. 6 ust. 1 lit. b RODO (wykonanie umowy/usługi), art. 6 ust. 1 lit. f RODO (prawnie uzasadniony interes — obsługa korespondencji) oraz art. 6 ust. 1 lit. a RODO (Twoja zgoda — dotyczy korzystania z narzędzia Career Navigator).</p>
-
-  <h2 class="hl">5. Career Navigator — narzędzie AI do analizy CV</h2>
-  <div class="box">
-    <strong>Najważniejsze w skrócie:</strong> Treść, którą wklejasz, jest przetwarzana „w locie” wyłącznie w celu wygenerowania analizy i <strong>nie jest przez nas zapisywana</strong> w żadnej bazie danych. Aby zminimalizować przetwarzanie danych osobowych, prosimy, abyś podawał(a) wyłącznie informacje o doświadczeniu zawodowym i nie umieszczał(a) danych takich jak adres, numer telefonu czy data urodzenia, jeśli nie są niezbędne.
-  </div>
-  <p><strong>Jakie dane przetwarzamy:</strong> wyłącznie treść, którą samodzielnie wkleisz w pola narzędzia — opis doświadczenia zawodowego / CV oraz treść ogłoszenia o pracę. Nie wymagamy zakładania konta ani logowania.</p>
-  <p><strong>Czas przechowywania:</strong> nie przechowujemy wklejanej treści. Dane są przekazywane do analizy i zwracane jako wynik w Twojej przeglądarce; po wygenerowaniu odpowiedzi nie są przez nas utrwalane.</p>
-  <p><strong>Przekazywanie danych do dostawcy AI (poza EOG):</strong> aby wygenerować analizę, wklejona treść jest przesyłana do zewnętrznego dostawcy modelu sztucznej inteligencji — <strong>Anthropic, PBC</strong> (USA), który przetwarza ją w naszym imieniu jako podmiot przetwarzający, wyłącznie w celu wygenerowania odpowiedzi. Oznacza to przekazanie danych poza Europejski Obszar Gospodarczy (do USA). Przekazanie odbywa się na podstawie Twojej zgody oraz mechanizmów transferu stosowanych przez dostawcę. Jeżeli nie chcesz, aby Twoje dane zostały przekazane do dostawcy AI, nie korzystaj z narzędzia.</p>
-  <p><strong>Charakter wyników:</strong> wyniki (w tym ocena ATS, widełki płacowe, sugestie) mają charakter orientacyjny i są generowane automatycznie przez AI. Mogą zawierać nieścisłości — przed wykorzystaniem (np. wysłaniem CV) zweryfikuj treść samodzielnie.</p>
-
-  <h2>6. Odbiorcy danych</h2>
-  <p>Nie sprzedajemy Twoich danych. Dane mogą być przekazane podmiotom niezbędnym do realizacji usługi: operatorowi płatności (przy zakupie), dostawcy infrastruktury hostingowej oraz dostawcy modelu AI (Anthropic) — wyłącznie w zakresie i celu opisanym w niniejszej polityce.</p>
-
-  <h2>7. Pliki cookies</h2>
-  <p>Strona może używać technicznych plików cookies niezbędnych do działania. Nie używamy cookies marketingowych ani śledzących bez Twojej zgody.</p>
-
-  <h2>8. Twoje prawa</h2>
-  <p>Masz prawo do: dostępu do danych, sprostowania, usunięcia („prawo do bycia zapomnianym”), ograniczenia przetwarzania, przenoszenia danych, wniesienia sprzeciwu, a także — w zakresie zgody — jej wycofania w dowolnym momencie (bez wpływu na zgodność z prawem przetwarzania sprzed wycofania). Masz również prawo wniesienia skargi do Prezesa UODO (<a href="https://uodo.gov.pl" target="_blank" rel="noopener">uodo.gov.pl</a>).</p>
-
-  <h2>9. Kontakt</h2>
-  <p>E-mail: <a href="mailto:aimanagementacademy.contact@gmail.com">aimanagementacademy.contact@gmail.com</a><br>
-  LinkedIn: <a href="https://www.linkedin.com/in/marcin-ai-management-academy/" target="_blank" rel="noopener">linkedin.com/in/marcin-ai-management-academy</a></p>
-
-  <h2>10. Zmiany polityki prywatności</h2>
-  <p>Zastrzegamy sobie prawo do aktualizacji niniejszej polityki. O istotnych zmianach poinformujemy poprzez aktualizację daty na górze strony.</p>
-
-  <div class="foot">© 2026 AI Management Academy — aimanagementacademy.pl</div>
-</div>
+  </article>
+</section>
 </body>
 </html>

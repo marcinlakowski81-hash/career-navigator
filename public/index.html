@@ -196,6 +196,36 @@
   .step .c .when{display:inline-block;margin-top:6px;font-size:.72rem;font-weight:700;color:var(--gold-deep);background:rgba(184,138,50,.13);padding:3px 10px;border-radius:20px;letter-spacing:.04em}
   footer{text-align:center;margin-top:44px;color:var(--muted);font-size:.8rem}
   footer b{font-family:'Fraunces',serif;color:var(--ink-soft);font-weight:600}
+  footer .legal-links{margin-top:8px;font-size:.78rem}
+  footer .legal-links a{color:var(--muted);text-decoration:underline;text-underline-offset:3px;margin:0 8px}
+  footer .legal-links a:hover{color:var(--gold-deep)}
+
+  /* Komunikat ogólny AI */
+  .ai-notice{background:rgba(184,138,50,.07);border:1px solid rgba(184,138,50,.25);border-radius:12px;
+    padding:11px 16px;font-size:.82rem;color:var(--ink-soft);line-height:1.5;margin-bottom:0}
+  .ai-notice strong{color:var(--ink)}
+
+  /* Komunikat ostrzegawczy nad checkboxem */
+  .data-warning{background:rgba(181,80,63,.05);border:1.5px solid rgba(181,80,63,.22);border-radius:12px;
+    padding:13px 16px;font-size:.82rem;color:#7a3530;line-height:1.5;margin-top:18px}
+  .data-warning strong{font-weight:700}
+
+  /* Nowy checkbox - dane nadmiarowe */
+  .consent-special{display:flex;align-items:flex-start;gap:10px;margin-top:14px;
+    font-size:.85rem;color:var(--ink-soft);line-height:1.45;cursor:pointer}
+  .consent-special input{margin-top:3px;width:17px;height:17px;flex:none;accent-color:var(--gold);cursor:pointer}
+
+  /* Tekst przy przycisku z linkami */
+  .submit-legal{font-size:.76rem;color:var(--muted);margin-top:8px;line-height:1.5}
+  .submit-legal a{color:var(--gold-deep);font-weight:600;text-underline-offset:2px}
+
+  /* Disclaimer pod wynikiem */
+  .result-disclaimer{background:rgba(0,0,0,.03);border:1px solid var(--line);border-radius:10px;
+    padding:11px 16px;font-size:.78rem;color:var(--muted);font-style:italic;margin-top:4px}
+
+  /* Komunikat nad scoringiem */
+  .scoring-notice{background:rgba(22,38,63,.04);border:1px solid rgba(22,38,63,.14);border-radius:12px;
+    padding:11px 16px;font-size:.82rem;color:var(--ink-soft);line-height:1.5;margin-bottom:14px}
 </style>
 
 <div class="wrap">
@@ -219,6 +249,11 @@
     <p>Dwa narzędzia w jednym: analiza CV pod ogłoszenie + scoring pracodawcy oparty na danych publicznych KRS, GoWork i Aleo.</p>
   </header>
 
+  <!-- KOMUNIKAT OGÓLNY AI -->
+  <div class="ai-notice" style="margin:18px 0 0">
+    <strong>W Punkt CV jest narzędziem w fazie testów.</strong> Wyniki są generowane z wykorzystaniem AI, mają charakter pomocniczy i orientacyjny oraz mogą zawierać błędy lub uproszczenia. Przed wykorzystaniem wyniku, np. przed wysłaniem CV albo podjęciem decyzji zawodowej, zweryfikuj go samodzielnie.
+  </div>
+
   <!-- TABS -->
   <div class="tabs">
     <button class="tab active" id="tab1" onclick="switchTab(1)">📄 Analiza CV</button>
@@ -231,38 +266,47 @@
       <div class="inputs">
         <div class="field">
           <label><span class="n">1</span> Twoje doświadczenie / obecne CV</label>
-          <div class="hint">Wklej obecne CV albo opisz doświadczenie, umiejętności i wykształcenie. <strong>Wskazówka:</strong> wystarczy doświadczenie zawodowe — nie musisz podawać telefonu, adresu ani daty urodzenia.</div>
+          <div class="hint">Wklej obecne CV albo opisz doświadczenie, umiejętności i wykształcenie. Wystarczy opis zawodowy — nie musisz podawać telefonu, dokładnego adresu, daty urodzenia, numeru PESEL ani innych danych, które nie są potrzebne do analizy. Jeżeli nie chcesz ujawniać nazw pracodawców, zastąp je określeniami: „Firma X", „Firma Y", „Firma Z".</div>
           <textarea id="cv" placeholder="Np. 5 lat jako specjalista ds. marketingu. Prowadziłem kampanie Google Ads i Meta z budżetem 200 tys. zł/rok. Zwiększyłem ruch o 60%. Znam Google Analytics, SEO, HTML. Wykształcenie: marketing, UW..."></textarea>
         </div>
         <div class="field">
           <label><span class="n">2</span> Treść ogłoszenia o pracę</label>
-          <div class="hint">Wklej całe ogłoszenie — obowiązki, wymagania, „mile widziane".</div>
+          <div class="hint">Wklej treść ogłoszenia o pracę, w szczególności opis stanowiska, obowiązki, wymagania i sekcję „mile widziane". Nie wklejaj danych osób prywatnych ani informacji, które nie są potrzebne do porównania CV z ogłoszeniem.</div>
           <textarea id="job" placeholder="Np. Poszukujemy Marketing Managera. Wymagania: 3+ lata doświadczenia, znajomość performance marketingu, zarządzanie zespołem, analityka, budżetowanie. Mile widziane: doświadczenie w e-commerce, SQL..."></textarea>
         </div>
       </div>
-      <label class="consent" for="consent1">
+      <!-- 4.3 Komunikat ostrzegawczy -->
+      <div class="data-warning">
+        <strong>UWAGA! WAŻNE! Zanim rozpoczniesz analizę:</strong> nie wpisuj danych nadmiarowych ani szczególnie wrażliwych, takich jak numer PESEL, dokładny adres, dane o zdrowiu, niepełnosprawności, poglądach politycznych, wyznaniu, przynależności związkowej, orientacji seksualnej, dane biometryczne lub informacje o karalności. Wklejona treść zostanie przesłana do zewnętrznego dostawcy AI w celu wygenerowania analizy. Nie zapisujemy treści CV ani wyniku analizy w naszej bazie. Dane mogą być jednak technicznie przetwarzane przez dostawców niezbędnych do działania narzędzia.
+      </div>
+
+      <!-- 4.4 Checkbox obowiązkowy - dane szczególnych kategorii -->
+      <label class="consent-special" for="consent1">
         <input type="checkbox" id="consent1">
-        <span>Zapoznałem(-am) się z <a href="polityka-prywatnosci.html" target="_blank" rel="noopener">Polityką prywatności</a> i wyrażam zgodę na przetworzenie wklejonych danych przez AI w celu analizy CV. Dane są przetwarzane „w locie" i nie są zapisywane.</span>
+        <span>Rozumiem, że do narzędzia nie należy wpisywać danych nadmiarowych ani szczególnie wrażliwych. Jeżeli mimo tego dobrowolnie wpiszę takie dane, wyrażam wyraźną zgodę na ich jednorazowe przetworzenie w celu wygenerowania analizy.</span>
       </label>
+
       <div class="actions">
         <button class="go" id="run" disabled>Analizuj i dopasuj CV →</button>
         <span class="err" id="err"></span>
-        <div class="test-warning">
-          <b>⚠️ WERSJA W FAZIE TESTÓW</b>
-          Nie podawaj danych wrażliwych:
-          <ul>
-            <li>nazwisko, data urodzenia, PESEL, adres, telefon,</li>
-            <li>nazwy pracodawców (zastąp: „Firma X", „Firma Y", „Firma Z").</li>
-          </ul>
-        </div>
       </div>
+
+      <!-- 4.5 Tekst przy przycisku z linkami -->
+      <p class="submit-legal">Klikając „Analizuj i dopasuj CV", rozpoczynasz korzystanie z Career Navigatora na zasadach określonych w <a href="regulamin.html" target="_blank" rel="noopener">Regulaminie</a> oraz potwierdzasz zapoznanie się z <a href="polityka-prywatnosci.html" target="_blank" rel="noopener">Polityką prywatności i cookies</a>.</p>
     </div>
     <div id="results"></div>
+    <div id="result-disclaimer-f1" style="display:none" class="result-disclaimer">
+      ⚠️ Wynik został wygenerowany automatycznie z wykorzystaniem AI. Ma charakter pomocniczy, orientacyjny i edukacyjny. Może zawierać błędy, nieścisłości lub uproszczenia. Przed wykorzystaniem wyniku, w szczególności przed wysłaniem CV do pracodawcy, zweryfikuj treść samodzielnie.
+    </div>
   </div>
 
   <!-- TAB 2: Scoring Pracodawcy -->
   <div class="tab-panel" id="panel2">
     <div class="panel">
+      <!-- 5.1 Komunikat nad sekcją scoringu -->
+      <div class="scoring-notice">
+        <strong>Scoring Pracodawcy jest funkcją testową.</strong> Wynik opiera się na danych publicznie dostępnych oraz analizie AI. Może być niepełny, nieaktualny lub zawierać nieścisłości. Nie stanowi opinii prawnej, finansowej, inwestycyjnej, rekomendacji zatrudnienia ani wiążącej oceny pracodawcy.
+      </div>
       <p style="color:var(--ink-soft);font-size:.95rem;margin-bottom:4px">Sprawdź firmę zanim wyślesz CV — raport oparty na danych KRS, GoWork, Aleo.com i mediach branżowych.</p>
       <div class="f2-inputs">
         <div class="field">
@@ -289,19 +333,31 @@
       <div class="f2-note">
         💡 Analiza opiera się wyłącznie na <strong>publicznie dostępnych danych</strong>: KRS, GoWork, Aleo.com, LinkedIn, media branżowe. Wynik ma charakter informacyjny i pomocniczy — nie stanowi opinii prawnej ani rekomendacji inwestycyjnej.
       </div>
-      <label class="consent" for="consent2">
+      <label class="consent-special" for="consent2">
         <input type="checkbox" id="consent2">
-        <span>Zapoznałem(-am) się z <a href="polityka-prywatnosci.html" target="_blank" rel="noopener">Polityką prywatności</a> i wyrażam zgodę na analizę podanych danych firmy przez AI. Dane są przetwarzane „w locie" i nie są zapisywane.</span>
+        <span>Rozumiem, że do narzędzia nie należy wpisywać danych nadmiarowych ani szczególnie wrażliwych. Jeżeli mimo tego dobrowolnie wpiszę takie dane, wyrażam wyraźną zgodę na ich jednorazowe przetworzenie w celu wygenerowania analizy.</span>
       </label>
       <div class="actions">
         <button class="go" id="run2" disabled>Analizuj pracodawcę →</button>
         <span class="err" id="err2"></span>
       </div>
+      <!-- 5.2 Tekst przy przycisku scoringu -->
+      <p class="submit-legal">Klikając „Analizuj pracodawcę", rozpoczynasz korzystanie z funkcji scoringu na zasadach określonych w <a href="regulamin.html" target="_blank" rel="noopener">Regulaminie</a> oraz potwierdzasz zapoznanie się z <a href="polityka-prywatnosci.html" target="_blank" rel="noopener">Polityką prywatności i cookies</a>. Wynik ma charakter informacyjny i pomocniczy.</p>
     </div>
     <div id="results2"></div>
+    <div id="result-disclaimer-f2" style="display:none" class="result-disclaimer">
+      ⚠️ Wynik scoringu został wygenerowany automatycznie z wykorzystaniem AI na podstawie danych publicznie dostępnych oraz informacji podanych przez Użytkownika. Wynik może być niepełny, nieaktualny lub zawierać błędy. Nie stanowi opinii prawnej, finansowej, inwestycyjnej ani rekomendacji zatrudnienia. Przed podjęciem decyzji zweryfikuj informacje w niezależnych źródłach.
+    </div>
   </div>
 
-  <footer>Prototyp · <b>W Punkt CV</b> — AI Asystent Kariery · oceny mają charakter orientacyjny · dane z publicznie dostępnych źródeł</footer>
+  <footer>
+    Prototyp · <b>W Punkt CV</b> — AI Asystent Kariery · oceny mają charakter orientacyjny · dane z publicznie dostępnych źródeł
+    <div class="legal-links">
+      <a href="regulamin.html" target="_blank" rel="noopener">Regulamin</a>
+      <a href="polityka-prywatnosci.html" target="_blank" rel="noopener">Polityka prywatności i cookies</a>
+      <a href="mailto:aimanagementacademy.contact@gmail.com">Kontakt</a>
+    </div>
+  </footer>
 </div>
 
 <script>
@@ -540,6 +596,7 @@ async function runF1(){
 
   $('#run').disabled=!consentBox1.checked;$('#run').textContent="Analizuj ponownie →";
   $('#card-cv')?.scrollIntoView({behavior:'smooth',block:'start'});
+  document.getElementById('result-disclaimer-f1').style.display='block';
 }
 
 /* ================================================================
@@ -746,5 +803,6 @@ GoWork ponizej 2.0 to czerwona flaga. Upadlosc w grupie = WYSOKIE ryzyko.`;
 
   $('#run2').disabled=!consentBox2.checked;$('#run2').textContent="Analizuj ponownie →";
   $('#card-emp')?.scrollIntoView({behavior:'smooth',block:'start'});
+  document.getElementById('result-disclaimer-f2').style.display='block';
 }
 </script>
