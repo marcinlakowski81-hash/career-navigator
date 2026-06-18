@@ -1,9 +1,4 @@
-// ============================================================================
-//  W PUNKT CV — FEEDBACK ENDPOINT
-//  Wysyła ocenę gwiazdkową i opcjonalny komentarz na adres Gmail.
-//  Dane: tylko liczba gwiazdek (1-5) + opcjonalny komentarz tekstowy.
-//  BEZ treści CV, BEZ wyników analizy, BEZ danych osobowych.
-// ============================================================================
+import nodemailer from 'nodemailer';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -50,11 +45,8 @@ export default async function handler(req, res) {
   <p style="font-size:12px;color:#7a7060;margin-top:24px">Wiadomość wysłana automatycznie przez W Punkt CV · wpunktcv.pl</p>
 </div>`;
 
-  // Wysyłka przez Gmail SMTP via fetch do prostego relay
-  // Używamy nodemailer przez dynamic import (dostępny w Node 18+ na Vercel)
   try {
-    const nodemailer = await import('nodemailer');
-    const transporter = nodemailer.default.createTransport({
+    const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
         user: GMAIL_USER,
