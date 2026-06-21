@@ -844,13 +844,16 @@ Zwróć WYŁĄCZNIE treść listu — bez żadnych komentarzy ani wyjaśnień.${
         <div class="copybar" style="margin-top:12px">
           <button id="copyLM">📋 Kopiuj list</button>
         </div>`;
-      out.querySelector('#copyLM').addEventListener('click', async function(){
-        const txt=out.querySelector('#lmText').innerText;
-        try{
-          await navigator.clipboard.writeText(txt);
-          this.textContent='✓ Skopiowano';
-        }catch(_){this.textContent='Zaznacz tekst i skopiuj ręcznie';}
-        setTimeout(()=>{this.textContent='📋 Kopiuj list';},3000);
+      out.querySelector('#copyLM').addEventListener('click', function(){
+        showActionModal('lm', async()=>{
+          const btn=out.querySelector('#copyLM');
+          const txt=out.querySelector('#lmText').innerText;
+          try{
+            await navigator.clipboard.writeText(txt);
+            btn.textContent='✓ Skopiowano';
+          }catch(_){btn.textContent='Zaznacz tekst i skopiuj ręcznie';}
+          setTimeout(()=>{btn.textContent='📋 Kopiuj list';},3000);
+        });
       });
       btn.textContent='↺ Wygeneruj ponownie';btn.disabled=false;
     }catch(e){
