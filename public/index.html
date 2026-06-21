@@ -227,6 +227,19 @@
   .result-disclaimer{background:rgba(0,0,0,.03);border:1px solid var(--line);border-radius:10px;
     padding:11px 16px;font-size:.78rem;color:var(--muted);font-style:italic;margin-top:4px}
 
+  /* LIST MOTYWACYJNY — karta CTA i wynik */
+  .lm-cta{display:flex;flex-direction:column;align-items:flex-start;gap:14px}
+  .lm-cta p{font-size:.95rem;color:var(--ink-soft);line-height:1.6;max-width:58ch}
+  .btn-lm{font-family:inherit;font-weight:700;font-size:.95rem;color:#fff;cursor:pointer;border:none;
+    background:linear-gradient(135deg,#3f7d54,#2e6342);padding:13px 26px;border-radius:12px;
+    box-shadow:0 10px 26px -10px rgba(46,99,66,.6);transition:transform .15s,box-shadow .15s;
+    display:inline-flex;align-items:center;gap:8px}
+  .btn-lm:hover{transform:translateY(-2px);box-shadow:0 16px 32px -10px rgba(46,99,66,.65)}
+  .btn-lm:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+  .lm-result{white-space:pre-wrap;font-size:.93rem;line-height:1.75;color:var(--ink);
+    background:#fffdf7;border:1px solid var(--line);border-radius:13px;padding:22px 26px;
+    font-family:'Plus Jakarta Sans',inherit}
+
   /* Komunikat nad scoringiem */
   .scoring-notice{background:rgba(22,38,63,.04);border:1px solid rgba(22,38,63,.14);border-radius:12px;
     padding:11px 16px;font-size:.82rem;color:var(--ink-soft);line-height:1.5;margin-bottom:14px}
@@ -801,6 +814,50 @@ async function runF1(){
         <div class="do">${esc(s.dzialanie||'')}</div>
         <span class="when">⏱ ${esc(s.czas||'')}</span></div></div>`).join('')}</div>`;
   }catch(e){fail(bP,e,results);}
+
+  // 5) List motywacyjny — karta CTA (generowanie na żądanie)
+  const bLM=card('lm','cv','List motywacyjny',results);
+  bLM.innerHTML=`<div class="lm-cta">
+    <p>Na podstawie Twojego CV i ogłoszenia AI napisze spersonalizowany list motywacyjny — gotowy do wysłania lub dalszej edycji.</p>
+    <button class="btn-lm" id="btnGenLM">✉ Wygeneruj list motywacyjny</button>
+    <div id="lm-output"></div>
+  </div>`;
+  bLM.querySelector('#btnGenLM').addEventListener('click', async function(){
+    const btn=this;
+    btn.disabled=true;btn.textContent="Generuję list…";
+    const out=bLM.querySelector('#lm-output');
+    out.innerHTML='<div class="loading"><span class="spin"></span> AI pisze list…</div>';
+    try{
+      const lmText=await ask(`Jesteś ekspertem od rekrutacji i pisania dokumentów aplikacyjnych na polskim rynku pracy. Na podstawie poniższego CV i ogłoszenia napisz profesjonalny, spersonalizowany list motywacyjny po polsku.
+
+ZASADY:
+- Długość: 3–4 akapity, łącznie ok. 250–350 słów
+- Ton: profesjonalny, konkretny, bez banałów (nie zaczynaj od "Z przyjemnością...")
+- Zacznij od mocnego, konkretnego zdania nawiązującego do stanowiska i firmy
+- Wpleć 2–3 konkretne osiągnięcia/umiejętności z CV, które bezpośrednio odpowiadają na potrzeby z ogłoszenia
+- Zakończ inicjatywą (zaproponuj spotkanie/rozmowę)
+- Format: zwykły tekst z akapitami (bez Markdown, bez nagłówków)
+- Na początku: "[Miejscowość, data]" jako placeholder, potem "Szanowni Państwo,"
+
+Zwróć WYŁĄCZNIE treść listu — bez żadnych komentarzy ani wyjaśnień.${base}`,3000);
+      out.innerHTML=`<div class="lm-result" id="lmText">${esc(lmText)}</div>
+        <div class="copybar" style="margin-top:12px">
+          <button id="copyLM">📋 Kopiuj list</button>
+        </div>`;
+      out.querySelector('#copyLM').addEventListener('click', async function(){
+        const txt=out.querySelector('#lmText').innerText;
+        try{
+          await navigator.clipboard.writeText(txt);
+          this.textContent='✓ Skopiowano';
+        }catch(_){this.textContent='Zaznacz tekst i skopiuj ręcznie';}
+        setTimeout(()=>{this.textContent='📋 Kopiuj list';},3000);
+      });
+      btn.textContent='↺ Wygeneruj ponownie';btn.disabled=false;
+    }catch(e){
+      out.innerHTML=`<div class="err">⚠ ${esc(e.message||'Błąd generowania listu.')}</div>`;
+      btn.textContent='↺ Spróbuj ponownie';btn.disabled=false;
+    }
+  });
 
   $('#run').disabled=!consentBox1.checked;$('#run').textContent="Analizuj ponownie →";
   $('#card-cv')?.scrollIntoView({behavior:'smooth',block:'start'});
