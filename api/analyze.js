@@ -6,11 +6,11 @@
 //  F2 (Scoring Pracodawcy) — Claude z web_search_20250305 (dane na żywo)
 //
 //  Aby zmienić model AI — zmień linijki poniżej.
-//    Opus 4.7 (najmocniejszy) : 'claude-opus-4-7'
+//    Opus 4.7 (najmocniejszy) : 'claude-sonnet-4-6'
 //    Sonnet 4.6 (taniej)      : 'claude-sonnet-4-6'
 // ============================================================================
 
-const MODEL_F1 = 'claude-opus-4-7';   // Analiza CV — bez web search
+const MODEL_F1 = 'claude-sonnet-4-6';   // Analiza CV — bez web search
 const MODEL_F2 = 'claude-sonnet-4-6'; // Scoring pracodawcy — z web search (sonnet szybszy do przeszukiwania)
 
 export default async function handler(req, res) {
