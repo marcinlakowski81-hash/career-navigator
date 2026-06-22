@@ -728,11 +728,12 @@ async function runF1(){
 
   // 1) tailored CV
   const bCV=card('cv','cv','Twoje dopasowane CV',results);
+  let generatedCvText='';
   try{
-    const cvText=await ask(`Jesteś ekspertem od pisania CV i systemów ATS. Napisz zwięzłe, jednostronicowe, profesjonalne CV po polsku, maksymalnie dopasowane do tego ogłoszenia: naturalnie wpleć słowa kluczowe z ogłoszenia, użyj mierzalnych osiągnięć, sekcje: nagłówek z imieniem/rolą, Podsumowanie zawodowe, Doświadczenie, Umiejętności, Wykształcenie. Format Markdown (## sekcje, **pogrubienia**, - punkty). Zwróć WYŁĄCZNIE treść CV.${base}`,4000);
-    bCV.innerHTML=`<div class="cv" id="cvRendered">${md(cvText)}</div>
+    generatedCvText=await ask(`Jesteś ekspertem od pisania CV i systemów ATS. Napisz zwięzłe, jednostronicowe, profesjonalne CV po polsku, maksymalnie dopasowane do tego ogłoszenia: naturalnie wpleć słowa kluczowe z ogłoszenia, użyj mierzalnych osiągnięć, sekcje: nagłówek z imieniem/rolą, Podsumowanie zawodowe, Doświadczenie, Umiejętności, Wykształcenie. Format Markdown (## sekcje, **pogrubienia**, - punkty). Zwróć WYŁĄCZNIE treść CV.${base}`,4000);
+    bCV.innerHTML=`<div class="cv" id="cvRendered">${md(generatedCvText)}</div>
       <div class="copybar">
-        <button id="copycv">📋 Kopiuj sformatowane CV</button>
+        <button id="copycv">📋 Kopiuj dopasowane CV</button>
         <button class="btn-export" id="exportcv">⬇ Eksportuj pełny raport PDF</button>
       </div>`;
     bCV.querySelector('#copycv').onclick=async()=>{
@@ -747,7 +748,7 @@ async function runF1(){
           }else{await navigator.clipboard.writeText(node.innerText);}
           btn.textContent="✓ Skopiowano";
         }catch(_){btn.textContent="Zaznacz tekst i skopiuj ręcznie";}
-        setTimeout(()=>{btn.textContent="📋 Kopiuj sformatowane CV";},3500);
+        setTimeout(()=>{btn.textContent="📋 Kopiuj dopasowane CV";},3500);
       });
     };
     bCV.querySelector('#exportcv').onclick=()=>{
@@ -761,15 +762,53 @@ async function runF1(){
     const j=parseJSON(await ask(`Jesteś rekruterem i ekspertem ATS. Porównaj kandydata z ogłoszeniem. Odpowiedz WYŁĄCZNIE poprawnym JSON po polsku, krótko (max ~12 słów na punkt):
 {"ats_score":<0-100>,"ats_uwagi":["..","..",".."],"podsumowanie":"2-3 zdania oceny dopasowania","przed_po":[{"aspekt":"..","przed":"..","po":".."},{"aspekt":"..","przed":"..","po":".."}],"mocne_strony":["..","..",".."],"slabe_strony":["..","..",".."]}${base}`,2500));
     const score=Math.max(0,Math.min(100,Math.round(j.ats_score||0)));
+
+    // Score PO — ocena nowego dopasowanego CV
+    let scoreAfter=score;
+    if(generatedCvText){
+      try{
+        const baseNew=`\n\nDOŚWIADCZENIE KANDYDATA:\n${generatedCvText}\n\nOGŁOSZENIE O PRACĘ:\n${job}`;
+        const jAfter=parseJSON(await ask(`Jesteś ekspertem ATS. Oceń dopasowanie tego CV do ogłoszenia. Odpowiedz WYŁĄCZNIE JSON bez komentarzy: {"ats_score":<0-100>}${baseNew}`,500));
+        scoreAfter=Math.max(score,Math.min(100,Math.round(jAfter.ats_score||score)));
+      }catch(_){}
+    }
+
     const col=score>=75?'var(--green)':score>=50?'var(--gold)':'var(--red)';
-    const C=2*Math.PI*52,off=C*(1-score/100);
-    bA.innerHTML=`<div class="ats"><div class="gauge">
-      <svg viewBox="0 0 128 128"><circle cx="64" cy="64" r="52" fill="none" stroke="var(--line)" stroke-width="11"/>
-      <circle cx="64" cy="64" r="52" fill="none" stroke="${col}" stroke-width="11" stroke-linecap="round"
-        stroke-dasharray="${C}" stroke-dashoffset="${C}" transform="rotate(-90 64 64)" id="ring"/></svg>
-      <div class="num"><b>${score}</b><small>na 100</small></div></div>
+    const colAfter=scoreAfter>=75?'var(--green)':scoreAfter>=50?'var(--gold)':'var(--red)';
+    const C=2*Math.PI*52;
+    const off=C*(1-score/100);
+    const offAfter=C*(1-scoreAfter/100);
+    const diff=scoreAfter-score;
+    bA.innerHTML=`<div class="ats">
+      <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap;margin-bottom:16px">
+        <div style="text-align:center">
+          <div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Twoje CV</div>
+          <div class="gauge">
+            <svg viewBox="0 0 128 128"><circle cx="64" cy="64" r="52" fill="none" stroke="var(--line)" stroke-width="11"/>
+            <circle cx="64" cy="64" r="52" fill="none" stroke="${col}" stroke-width="11" stroke-linecap="round"
+              stroke-dasharray="${C}" stroke-dashoffset="${C}" transform="rotate(-90 64 64)" id="ring"/></svg>
+            <div class="num"><b>${score}</b><small>na 100</small></div>
+          </div>
+        </div>
+        <div style="font-size:1.6rem;color:var(--muted);line-height:1">→</div>
+        <div style="text-align:center">
+          <div style="font-size:.72rem;color:var(--muted);margin-bottom:4px;font-weight:600;text-transform:uppercase;letter-spacing:.05em">Po dopasowaniu</div>
+          <div class="gauge">
+            <svg viewBox="0 0 128 128"><circle cx="64" cy="64" r="52" fill="none" stroke="var(--line)" stroke-width="11"/>
+            <circle cx="64" cy="64" r="52" fill="none" stroke="${colAfter}" stroke-width="11" stroke-linecap="round"
+              stroke-dasharray="${C}" stroke-dashoffset="${C}" transform="rotate(-90 64 64)" id="ring-after"/></svg>
+            <div class="num"><b>${scoreAfter}</b><small>na 100</small></div>
+          </div>
+        </div>
+        ${diff>0?`<div style="font-size:1.3rem;font-weight:700;color:var(--green)">+${diff} pkt ↑</div>`:''}
+      </div>
       <ul class="atsnotes">${(j.ats_uwagi||[]).map(u=>`<li>${esc(u)}</li>`).join('')}</ul></div>`;
-    setTimeout(()=>{const r=bA.querySelector('#ring');if(r)r.style.transition="stroke-dashoffset 1.1s ease",r.style.strokeDashoffset=off;},80);
+    setTimeout(()=>{
+      const r=bA.querySelector('#ring');
+      if(r)r.style.transition="stroke-dashoffset 1.1s ease",r.style.strokeDashoffset=off;
+      const r2=bA.querySelector('#ring-after');
+      if(r2)setTimeout(()=>{r2.style.transition="stroke-dashoffset 1.1s ease",r2.style.strokeDashoffset=offAfter;},500);
+    },80);
     const bS=card('sum','sum','Podsumowanie',results);
     bS.innerHTML=`<p class="lead">${esc(j.podsumowanie||'')}</p>`;
     if(Array.isArray(j.przed_po)&&j.przed_po.length){
