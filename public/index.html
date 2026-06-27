@@ -1044,6 +1044,13 @@ async function runF1(){
     const out=bLM.querySelector('#lm-output');
     out.innerHTML='<div class="loading"><span class="spin"></span> AI pisze list…</div>';
     try{
+      // Wyciągnij nazwę firmy z ogłoszenia
+      let companyName = '';
+      try{
+        const cj = parseJSON(await ask(`Na podstawie poniższego ogłoszenia o pracę zwróć WYŁĄCZNIE JSON: {"company":"<nazwa firmy>"}. Jeśli nie ma nazwy firmy, zwróć {"company":""}.\n\nOGŁOSZENIE:\n${job}`, 200));
+        companyName = (cj && cj.company) ? cj.company.trim() : '';
+      }catch(_){}
+
       const lmText=await ask(`Jesteś ekspertem od rekrutacji i pisania dokumentów aplikacyjnych na polskim rynku pracy. Na podstawie poniższego CV i ogłoszenia napisz profesjonalny, spersonalizowany list motywacyjny po polsku.
 
 ZASADY:
@@ -1057,9 +1064,16 @@ ZASADY:
 
 Zwróć WYŁĄCZNIE treść listu — bez żadnych komentarzy ani wyjaśnień.${base}`,3000);
       out.innerHTML=`<div class="lm-result" id="lmText">${esc(lmText)}</div>
-        <div class="copybar" style="margin-top:12px">
-          <button id="copyLM">📋 Kopiuj list</button>
+        <div class="copybar" style="margin-top:12px;gap:10px;flex-wrap:wrap;justify-content:flex-start">
+          <button id="btn-lm-pdf" class="btn-cv-pdf">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Pobierz list (PDF)
+          </button>
+          <button id="copyLM" style="margin-left:auto">📋 Kopiuj list</button>
         </div>`;
+      out.querySelector('#btn-lm-pdf').addEventListener('click', function(){
+        showActionModal('lm', ()=>downloadLetterPDF(lmText, companyName));
+      });
       out.querySelector('#copyLM').addEventListener('click', function(){
         showActionModal('lm', async()=>{
           const btn=out.querySelector('#copyLM');
@@ -1527,7 +1541,66 @@ GoWork ponizej 2.0 to czerwona flaga. Upadlosc w grupie = WYSOKIE ryzyko.`;
     setTimeout(()=>{ try{ win.focus(); }catch(_){} }, 400);
   };
 
-  window.exportPDF = function(panel){
+  /* ================================================================
+     POBIERZ LIST MOTYWACYJNY (PDF)
+     ================================================================ */
+  window.downloadLetterPDF = function(letterText, companyName){
+    const today = new Date().toLocaleDateString('pl-PL');
+    const company = companyName || 'Pracodawca';
+    const paragraphs = letterText.split(/\n\n+/).map(p => p.trim()).filter(Boolean);
+    const paragraphsHtml = paragraphs.map(p =>
+      '<p>' + p.replace(/\n/g, '<br>') + '</p>'
+    ).join('\n');
+
+    const win = window.open('', '_blank', 'width=900,height=700');
+    if(!win){ alert('Przeglądarka zablokowała nowe okno. Zezwól na wyskakujące okna i spróbuj ponownie.'); return; }
+
+    const html = `<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>List motywacyjny — ` + company + `</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600&family=Inter:wght@400;500;600&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Source Serif 4','Georgia',serif;font-size:11pt;color:#16263f;line-height:1.7;background:#fff}
+  .page{max-width:210mm;margin:0 auto;padding:16mm 20mm 16mm 20mm}
+  .lm-brand{display:flex;justify-content:space-between;align-items:center;
+    border-bottom:2px solid #16263f;padding-bottom:6pt;margin-bottom:18pt;
+    font-family:'Inter',sans-serif;font-size:7.5pt;color:#7a7060;letter-spacing:.04em}
+  .lm-brand strong{color:#b88a32;font-weight:600}
+  .lm-to{font-family:'Inter',sans-serif;font-size:9pt;color:#444;
+    margin-bottom:20pt;padding:10pt 14pt;border-left:3px solid #b88a32;background:#fffdf5}
+  .lm-to strong{display:block;font-size:8pt;text-transform:uppercase;letter-spacing:.06em;color:#b88a32;margin-bottom:3pt}
+  p{margin-bottom:12pt;font-size:11pt;text-align:justify}
+  .lm-footer{margin-top:20pt;padding-top:8pt;border-top:1pt solid #e3dbcb;
+    font-family:'Inter',sans-serif;font-size:7pt;color:#aaa;display:flex;justify-content:space-between}
+  @media print{body{font-size:11pt}.page{padding:12mm 18mm}.no-print{display:none!important}p{page-break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="lm-brand"><span><strong>W Punkt CV</strong> — AI Asystent Kariery</span><span>wpunktcv.pl</span></div>
+  <div class="lm-to"><strong>Do:</strong> ` + company + `</div>
+  ` + paragraphsHtml + `
+  <div class="lm-footer">
+    <span>Wygenerowano: ` + today + ` · wpunktcv.pl</span>
+    <span>Wynik analizy AI — zweryfikuj przed wyslaniem</span>
+  </div>
+  <div class="no-print" style="margin-top:24pt;text-align:center">
+    <button onclick="window.print()" style="font-family:'Inter',sans-serif;font-size:11pt;font-weight:600;background:#16263f;color:#b88a32;border:none;padding:12px 28px;border-radius:10px;cursor:pointer;margin-right:10px">\u2B07 Zapisz jako PDF (Ctrl+P)</button>
+    <button onclick="window.close()" style="font-family:'Inter',sans-serif;font-size:11pt;background:none;border:1px solid #ccc;color:#666;padding:12px 20px;border-radius:10px;cursor:pointer">Zamknij</button>
+    <p style="margin-top:10pt;font-size:8.5pt;color:#aaa;text-align:center">W oknie drukowania wybierz: Drukarka → &quot;Zapisz jako PDF&quot; · Marginesy: Domyslne</p>
+  </div>
+</div>
+</body>
+</html>`;
+    win.document.write(html);
+    win.document.close();
+    setTimeout(()=>{ try{ win.focus(); }catch(_){} }, 300);
+  };
+
+    window.exportPDF = function(panel){
     /* Rozwiń wszystkie details przed drukiem */
     document.querySelectorAll('#results details, #results2 details').forEach(d=>{
       d.setAttribute('open','');
