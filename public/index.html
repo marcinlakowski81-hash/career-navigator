@@ -929,7 +929,12 @@ async function runF1(){
     };
     // Pobierz CV jako czysty PDF (tylko CV, gotowe do wysłania pracodawcy)
     bCV.querySelector('#btn-cv-pdf').onclick=()=>{
-      downloadCvPDF(generatedCvText);
+      // Otwieramy okno od razu (w odpowiedzi na klik) — przeglądarka go nie zablokuje
+      // Potem pokazujemy modal oceny — po zamknięciu modalu wpisujemy treść do okna
+      const win = window.open('', '_blank', 'width=900,height=700');
+      if(!win){ alert('Przeglądarka zablokowała nowe okno. Zezwól na wyskakujące okna i spróbuj ponownie.'); return; }
+      win.document.write('<html><body style="font-family:sans-serif;padding:40px;color:#666">⏳ Przygotowuję CV...</body></html>');
+      showActionModal('cv', ()=>downloadCvPDF(generatedCvText, win));
     };
   }catch(e){fail(bCV,e,results);}
 
@@ -1370,7 +1375,7 @@ GoWork ponizej 2.0 to czerwona flaga. Upadlosc w grupie = WYSOKIE ryzyko.`;
   /* ================================================================
      POBIERZ CV (PDF) — czysty plik tylko z CV, gotowy do wysłania
      ================================================================ */
-  window.downloadCvPDF = function(cvMarkdown){
+  window.downloadCvPDF = function(cvMarkdown, win){
     // Otwiera nowe okno z CV w HTML i wywołuje print() — przeglądarka zapisuje PDF
     // Polskie znaki działają natywnie, bez bibliotek zewnętrznych
 
@@ -1423,8 +1428,9 @@ GoWork ponizej 2.0 to czerwona flaga. Upadlosc w grupie = WYSOKIE ryzyko.`;
     const cvHtml = mdToHtml(cvMarkdown);
     const today = new Date().toLocaleDateString('pl-PL');
 
-    const win = window.open('', '_blank', 'width=900,height=700');
-    if(!win){ alert('Przeglądarka zablokował nowe okno. Zezwól na wyskakujące okna i spróbuj ponownie.'); return; }
+    // Użyj przekazanego okna lub otwórz nowe jako fallback
+    if(!win || win.closed){ win = window.open('', '_blank', 'width=900,height=700'); }
+    if(!win){ alert('Przeglądarka zablokowała nowe okno. Zezwól na wyskakujące okna i spróbuj ponownie.'); return; }
 
     win.document.write(`<!DOCTYPE html>
 <html lang="pl">
