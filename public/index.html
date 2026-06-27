@@ -929,7 +929,7 @@ async function runF1(){
     };
     // Pobierz CV jako czysty PDF (tylko CV, gotowe do wysłania pracodawcy)
     bCV.querySelector('#btn-cv-pdf').onclick=()=>{
-      showActionModal('cv', ()=>downloadCvPDF(generatedCvText));
+      downloadCvPDF(generatedCvText);
     };
   }catch(e){fail(bCV,e,results);}
 
