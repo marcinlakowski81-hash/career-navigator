@@ -1426,7 +1426,7 @@ GoWork ponizej 2.0 to czerwona flaga. Upadlosc w grupie = WYSOKIE ryzyko.`;
     const win = window.open('', '_blank', 'width=900,height=700');
     if(!win){ alert('Przeglądarka zablokował nowe okno. Zezwól na wyskakujące okna i spróbuj ponownie.'); return; }
 
-    win.document.write(\`<!DOCTYPE html>
+    win.document.write(`<!DOCTYPE html>
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
@@ -1522,7 +1522,7 @@ GoWork ponizej 2.0 to czerwona flaga. Upadlosc w grupie = WYSOKIE ryzyko.`;
   </div>
 </div>
 </body>
-</html>\`);
+</html>`);
     win.document.close();
     // Na desktop można od razu wywołać print, na mobile lepiej żeby user kliknął sam
     setTimeout(()=>{ try{ win.focus(); }catch(_){} }, 400);
