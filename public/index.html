@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   :root{
     --paper:#f6f1e7;--paper-2:#fffdf8;--ink:#16263f;--ink-soft:#3d4f68;
@@ -250,6 +251,14 @@
     border:1px solid var(--line);background:#fff;color:var(--ink-soft);
     padding:8px 14px;border-radius:9px;display:inline-flex;align-items:center;gap:6px}
   .btn-export:hover{border-color:var(--gold);color:var(--gold-deep)}
+
+  /* POBIERZ CV PDF */
+  .btn-cv-pdf{font-family:inherit;font-size:.85rem;font-weight:700;cursor:pointer;border:none;
+    background:linear-gradient(135deg,var(--green),#2e6342);color:#fff;
+    padding:9px 18px;border-radius:10px;display:inline-flex;align-items:center;gap:7px;
+    box-shadow:0 8px 20px -8px rgba(46,99,66,.55);transition:transform .15s,box-shadow .15s}
+  .btn-cv-pdf:hover{transform:translateY(-1px);box-shadow:0 12px 26px -8px rgba(46,99,66,.65)}
+  .btn-cv-pdf:disabled{opacity:.4;cursor:not-allowed;transform:none}
 
   /* MODAL ANKIETY PRZED AKCJĄ */
   #action-modal-overlay{position:fixed;inset:0;z-index:20000;background:rgba(22,38,63,.55);
@@ -892,8 +901,12 @@ async function runF1(){
   try{
     generatedCvText=await ask(`Jesteś ekspertem od pisania CV i systemów ATS. Napisz zwięzłe, jednostronicowe, profesjonalne CV po polsku, maksymalnie dopasowane do tego ogłoszenia: naturalnie wpleć słowa kluczowe z ogłoszenia, użyj mierzalnych osiągnięć, sekcje: nagłówek z imieniem/rolą, Podsumowanie zawodowe, Doświadczenie, Umiejętności, Wykształcenie. Format Markdown (## sekcje, **pogrubienia**, - punkty). Zwróć WYŁĄCZNIE treść CV.${base}`,4000);
     bCV.innerHTML=`<div class="cv" id="cvRendered">${md(generatedCvText)}</div>
-      <div class="copybar">
-        <button id="copycv">📋 Kopiuj dopasowane CV</button>
+      <div class="copybar" style="gap:10px;flex-wrap:wrap;justify-content:flex-start">
+        <button id="btn-cv-pdf" class="btn-cv-pdf">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Pobierz CV (PDF)
+        </button>
+        <button id="copycv" style="margin-left:auto">📋 Kopiuj dopasowane CV</button>
         <button class="btn-export" id="exportcv">⬇ Eksportuj pełny raport PDF</button>
       </div>`;
     bCV.querySelector('#copycv').onclick=async()=>{
@@ -913,6 +926,10 @@ async function runF1(){
     };
     bCV.querySelector('#exportcv').onclick=()=>{
       showActionModal('cv', ()=>exportPDF('f1'));
+    };
+    // Pobierz CV jako czysty PDF (tylko CV, gotowe do wysłania pracodawcy)
+    bCV.querySelector('#btn-cv-pdf').onclick=()=>{
+      showActionModal('cv', ()=>downloadCvPDF(generatedCvText));
     };
   }catch(e){fail(bCV,e,results);}
 
@@ -1350,6 +1367,158 @@ GoWork ponizej 2.0 to czerwona flaga. Upadlosc w grupie = WYSOKIE ryzyko.`;
   };
 
   /* ---- EKSPORT PDF ---- */
+  /* ================================================================
+     POBIERZ CV (PDF) — czysty plik tylko z CV, gotowy do wysłania
+     ================================================================ */
+  window.downloadCvPDF = function(cvMarkdown){
+    try{
+      const { jsPDF } = window.jspdf;
+      if(!jsPDF){ alert('Biblioteka PDF nie jest jeszcze załadowana. Spróbuj za chwilę.'); return; }
+
+      const doc = new jsPDF({ unit:'mm', format:'a4', orientation:'portrait' });
+
+      // Kolory i fonty
+      const INK    = [22, 38, 63];
+      const GOLD   = [184, 138, 50];
+      const MUTED  = [100, 112, 130];
+      const LINE   = [220, 212, 196];
+      const GREEN  = [63, 125, 84];
+
+      const W = 210, H = 297;
+      const ML = 18, MR = 18, MT = 18;
+      let y = MT;
+      const CW = W - ML - MR; // szerokość treści
+
+      // Funkcja zawijania tekstu
+      function addWrappedText(text, x, startY, maxW, lineH, fontSize, color, style){
+        doc.setFontSize(fontSize);
+        doc.setTextColor(...color);
+        doc.setFont('helvetica', style || 'normal');
+        const lines = doc.splitTextToSize(text, maxW);
+        lines.forEach(line => {
+          if(startY > H - 15){ doc.addPage(); startY = MT; }
+          doc.text(line, x, startY);
+          startY += lineH;
+        });
+        return startY;
+      }
+
+      // Pasek nagłówkowy
+      doc.setFillColor(...INK);
+      doc.rect(0, 0, W, 12, 'F');
+      doc.setFontSize(7);
+      doc.setTextColor(184, 138, 50);
+      doc.setFont('helvetica', 'bold');
+      doc.text('W PUNKT CV — AI Asystent Kariery', ML, 8);
+      doc.setTextColor(180, 160, 120);
+      doc.setFont('helvetica', 'normal');
+      doc.text('wpunktcv.pl', W - MR, 8, { align:'right' });
+      y = 20;
+
+      // Parsuj markdown — prosta obsługa ## h2, ### h3, **bold**, - lista, tekst
+      const lines = cvMarkdown.split(/\r?\n/);
+      let inList = false;
+
+      for(let i = 0; i < lines.length; i++){
+        const raw = lines[i];
+        const l = raw.trim();
+
+        if(!l){
+          if(inList){ inList = false; y += 2; }
+          else { y += 3; }
+          continue;
+        }
+
+        // Nagłówek H1/H2 — sekcja CV
+        if(/^##\s+/.test(l) || /^#\s+/.test(l)){
+          inList = false;
+          const txt = l.replace(/^#+\s+/, '');
+          y += 3;
+          if(y > H - 20){ doc.addPage(); y = MT; }
+          // Linia złota pod nagłówkiem
+          doc.setFillColor(...GOLD);
+          doc.rect(ML, y - 1, CW, 0.5, 'F');
+          doc.setFontSize(11);
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(...INK);
+          doc.text(txt.toUpperCase(), ML, y + 5);
+          y += 9;
+          continue;
+        }
+
+        // Nagłówek H3
+        if(/^###\s+/.test(l)){
+          inList = false;
+          const txt = l.replace(/^###\s+/, '');
+          y += 2;
+          if(y > H - 20){ doc.addPage(); y = MT; }
+          doc.setFontSize(10);
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(...INK);
+          doc.text(txt, ML, y);
+          y += 6;
+          continue;
+        }
+
+        // Lista
+        if(/^[-*]\s+/.test(l)){
+          inList = true;
+          const txt = l.replace(/^[-*]\s+/, '').replace(/\*\*(.+?)\*\*/g, '$1');
+          if(y > H - 15){ doc.addPage(); y = MT; }
+          // Kropka
+          doc.setFillColor(...GOLD);
+          doc.circle(ML + 2, y - 1.5, 1, 'F');
+          const wrapped = doc.splitTextToSize(txt, CW - 8);
+          doc.setFontSize(9.5);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(...INK);
+          wrapped.forEach((wl, wi) => {
+            if(y > H - 15){ doc.addPage(); y = MT; }
+            doc.text(wl, ML + 6, y);
+            y += 5;
+          });
+          continue;
+        }
+
+        // Zwykły tekst (może mieć **pogrubienia**)
+        inList = false;
+        if(y > H - 15){ doc.addPage(); y = MT; }
+        const plain = l.replace(/\*\*(.+?)\*\*/g, '$1');
+        const wrapped = doc.splitTextToSize(plain, CW);
+        doc.setFontSize(9.5);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(...INK);
+        wrapped.forEach(wl => {
+          if(y > H - 15){ doc.addPage(); y = MT; }
+          doc.text(wl, ML, y);
+          y += 5;
+        });
+        y += 1;
+      }
+
+      // Stopka
+      const pageCount = doc.getNumberOfPages();
+      for(let p = 1; p <= pageCount; p++){
+        doc.setPage(p);
+        doc.setFillColor(...LINE);
+        doc.rect(0, H - 10, W, 10, 'F');
+        doc.setFontSize(6.5);
+        doc.setTextColor(...MUTED);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Wygenerowano przez W Punkt CV (wpunktcv.pl) — ' + new Date().toLocaleDateString('pl-PL'), ML, H - 4);
+        if(pageCount > 1) doc.text(`${p} / ${pageCount}`, W - MR, H - 4, { align:'right' });
+      }
+
+      // Pobierz plik
+      const filename = 'CV_WPunktCV_' + new Date().toISOString().slice(0,10) + '.pdf';
+      doc.save(filename);
+
+    } catch(err){
+      alert('Błąd generowania PDF: ' + (err.message || 'nieznany'));
+      console.error(err);
+    }
+  };
+
   window.exportPDF = function(panel){
     /* Rozwiń wszystkie details przed drukiem */
     document.querySelectorAll('#results details, #results2 details').forEach(d=>{
