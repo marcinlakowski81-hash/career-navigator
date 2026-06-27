@@ -52,47 +52,38 @@ export default async function handler(req, res) {
     }
 
     try {
-      const pageRes = await fetch(url, {
+      // Jina AI Reader — pobiera czysty tekst, omija blokady 403 portali pracy (Pracuj.pl, LinkedIn itp.)
+      const jinaUrl = 'https://r.jina.ai/' + url;
+      const pageRes = await fetch(jinaUrl, {
         headers: {
-          'User-Agent': 'Mozilla/5.0 (compatible; WPunktCV/1.0)',
-          'Accept': 'text/html,application/xhtml+xml,*/*'
+          'Accept': 'text/plain',
+          'X-Return-Format': 'text'
         },
-        redirect: 'follow',
-        signal: AbortSignal.timeout(10000) // 10s timeout
+        signal: AbortSignal.timeout(20000) // 20s — Jina potrzebuje więcej czasu
       });
 
       if (!pageRes.ok) {
-        return res.status(400).json({ error: `Nie udało się pobrać strony (HTTP ${pageRes.status}). Skopiuj treść ogłoszenia ręcznie.` });
+        return res.status(400).json({ error: `Nie udało się pobrać ogłoszenia (HTTP ${pageRes.status}). Skopiuj treść ręcznie.` });
       }
 
-      const html = await pageRes.text();
-
-      // Wyczyść HTML — zostaw tylko tekst
-      const text = html
-        .replace(/<script[\s\S]*?<\/script>/gi, '')
-        .replace(/<style[\s\S]*?<\/style>/gi, '')
-        .replace(/<[^>]+>/g, ' ')
-        .replace(/&nbsp;/g, ' ')
-        .replace(/&amp;/g, '&')
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&quot;/g, '"')
-        .replace(/&#39;/g, "'")
+      // Jina zwraca już czysty tekst markdown — tylko przytnij i oczyść
+      const raw = await pageRes.text();
+      const text = raw
         .replace(/\s{3,}/g, '\n\n')
         .trim()
-        .slice(0, 8000); // max 8000 znaków
+        .slice(0, 10000); // 10 000 znaków — więcej niż poprzednio, Jina daje czysty tekst
 
       if (text.length < 100) {
-        return res.status(400).json({ error: 'Strona nie zwróciła treści tekstowej. Skopiuj ogłoszenie ręcznie.' });
+        return res.status(400).json({ error: 'Strona nie zwróciła treści. Skopiuj ogłoszenie ręcznie.' });
       }
 
       return res.status(200).json({ text });
 
     } catch (e) {
       if (e.name === 'TimeoutError') {
-        return res.status(400).json({ error: 'Strona nie odpowiada (timeout). Skopiuj ogłoszenie ręcznie.' });
+        return res.status(400).json({ error: 'Pobieranie trwało zbyt długo. Skopiuj ogłoszenie ręcznie.' });
       }
-      return res.status(400).json({ error: 'Błąd pobierania strony. Skopiuj ogłoszenie ręcznie.' });
+      return res.status(400).json({ error: 'Błąd pobierania ogłoszenia. Skopiuj treść ręcznie.' });
     }
   }
 
