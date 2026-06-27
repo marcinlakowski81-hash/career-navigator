@@ -2,8 +2,9 @@
 //  W PUNKT CV — BACKEND (funkcja serverless dla Vercel)
 //  Tu mieszka Twój klucz API. Klient NIGDY go nie widzi.
 //
-//  F1 (Analiza CV)        — zwykłe wywołanie Claude, bez web search
+//  F1 (Analiza CV)         — zwykłe wywołanie Claude, bez web search
 //  F2 (Scoring Pracodawcy) — Claude z web_search_20250305 (dane na żywo)
+//  fetch-url               — pobiera treść ogłoszenia z podanego URL
 //
 //  Aby zmienić model AI — zmień linijki poniżej.
 //    Opus 4.7 (najmocniejszy) : 'claude-opus-4-7'
@@ -11,7 +12,7 @@
 // ============================================================================
 
 const MODEL_F1 = 'claude-opus-4-7';   // Analiza CV — bez web search
-const MODEL_F2 = 'claude-sonnet-4-6'; // Scoring pracodawcy — z web search (sonnet szybszy do przeszukiwania)
+const MODEL_F2 = 'claude-sonnet-4-6'; // Scoring pracodawcy — z web search
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -23,12 +24,86 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Brak klucza API w konfiguracji serwera.' });
   }
 
+  let body;
+  try {
+    body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+  } catch (e) {
+    return res.status(400).json({ error: 'Nieprawidłowe dane wejściowe.' });
+  }
+
+  // ----------------------------------------------------------------
+  // TRYB: fetch-url — pobierz treść ogłoszenia z URL
+  // ----------------------------------------------------------------
+  if (body.action === 'fetch-url') {
+    const url = body.url;
+    if (!url || typeof url !== 'string') {
+      return res.status(400).json({ error: 'Brak URL.' });
+    }
+
+    // Podstawowa walidacja URL
+    let parsedUrl;
+    try {
+      parsedUrl = new URL(url);
+      if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
+        return res.status(400).json({ error: 'Dozwolone tylko adresy http/https.' });
+      }
+    } catch {
+      return res.status(400).json({ error: 'Nieprawidłowy URL.' });
+    }
+
+    try {
+      const pageRes = await fetch(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (compatible; WPunktCV/1.0)',
+          'Accept': 'text/html,application/xhtml+xml,*/*'
+        },
+        redirect: 'follow',
+        signal: AbortSignal.timeout(10000) // 10s timeout
+      });
+
+      if (!pageRes.ok) {
+        return res.status(400).json({ error: `Nie udało się pobrać strony (HTTP ${pageRes.status}). Skopiuj treść ogłoszenia ręcznie.` });
+      }
+
+      const html = await pageRes.text();
+
+      // Wyczyść HTML — zostaw tylko tekst
+      const text = html
+        .replace(/<script[\s\S]*?<\/script>/gi, '')
+        .replace(/<style[\s\S]*?<\/style>/gi, '')
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/\s{3,}/g, '\n\n')
+        .trim()
+        .slice(0, 8000); // max 8000 znaków
+
+      if (text.length < 100) {
+        return res.status(400).json({ error: 'Strona nie zwróciła treści tekstowej. Skopiuj ogłoszenie ręcznie.' });
+      }
+
+      return res.status(200).json({ text });
+
+    } catch (e) {
+      if (e.name === 'TimeoutError') {
+        return res.status(400).json({ error: 'Strona nie odpowiada (timeout). Skopiuj ogłoszenie ręcznie.' });
+      }
+      return res.status(400).json({ error: 'Błąd pobierania strony. Skopiuj ogłoszenie ręcznie.' });
+    }
+  }
+
+  // ----------------------------------------------------------------
+  // TRYB: analiza Claude (F1 i F2)
+  // ----------------------------------------------------------------
   let prompt, maxTokens, useWebSearch;
   try {
-    const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
     prompt       = body.prompt;
     maxTokens    = body.max_tokens || 1200;
-    useWebSearch = body.web_search === true; // F2 przesyła web_search: true
+    useWebSearch = body.web_search === true;
   } catch (e) {
     return res.status(400).json({ error: 'Nieprawidłowe dane wejściowe.' });
   }
@@ -37,9 +112,6 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Brak treści zapytania (prompt).' });
   }
 
-  // ----------------------------------------------------------------
-  // Buduj body zapytania — F2 dostaje narzędzie web_search
-  // ----------------------------------------------------------------
   const requestBody = {
     model:      useWebSearch ? MODEL_F2 : MODEL_F1,
     max_tokens: maxTokens,
@@ -55,9 +127,6 @@ export default async function handler(req, res) {
     ];
   }
 
-  // ----------------------------------------------------------------
-  // Wywołaj API Claude
-  // ----------------------------------------------------------------
   try {
     const r = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -65,7 +134,6 @@ export default async function handler(req, res) {
         'Content-Type':    'application/json',
         'x-api-key':       API_KEY,
         'anthropic-version': '2023-06-01',
-        // web_search wymaga beta headera
         ...(useWebSearch ? { 'anthropic-beta': 'web-search-2025-03-05' } : {})
       },
       body: JSON.stringify(requestBody)
@@ -80,11 +148,6 @@ export default async function handler(req, res) {
       return res.status(r.status).json({ error: 'Błąd API: ' + msg });
     }
 
-    // ----------------------------------------------------------------
-    // Obsługa tool_use (web_search) — pętla agentic
-    // Claude może zwrócić tool_use zamiast tekstu końcowego.
-    // Musimy wtedy dosłać wynik narzędzia i poczekać na finalną odpowiedź.
-    // ----------------------------------------------------------------
     let finalText = '';
     let currentData = data;
     let messages = [{ role: 'user', content: prompt }];
@@ -95,25 +158,19 @@ export default async function handler(req, res) {
       const content = currentData.content || [];
       const stopReason = currentData.stop_reason;
 
-      // Zbierz tekst z tej rundy
       const textParts = content
         .filter(b => b.type === 'text')
         .map(b => b.text)
         .join('\n');
       if (textParts) finalText += textParts;
 
-      // Jeśli stop_reason to "end_turn" lub brak tool_use — gotowe
       if (stopReason === 'end_turn' || !content.some(b => b.type === 'tool_use')) {
         break;
       }
 
-      // Są tool_use — przygotuj tool_result i wyślij kolejną rundę
       const toolUseBlocks = content.filter(b => b.type === 'tool_use');
-
-      // Dodaj odpowiedź asystenta do historii
       messages.push({ role: 'assistant', content });
 
-      // Buduj tool_result dla każdego wywołania narzędzia
       const toolResults = toolUseBlocks.map(tu => ({
         type:        'tool_result',
         tool_use_id: tu.id,
@@ -124,7 +181,6 @@ export default async function handler(req, res) {
 
       messages.push({ role: 'user', content: toolResults });
 
-      // Kolejne wywołanie API z historią
       const r2 = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
         headers: {
@@ -151,7 +207,6 @@ export default async function handler(req, res) {
       }
     }
 
-    // Zbierz tekst z ostatniej rundy jeśli pętla nie zebrała
     if (!finalText) {
       finalText = (currentData.content || [])
         .filter(b => b.type === 'text')
