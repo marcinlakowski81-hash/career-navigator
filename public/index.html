@@ -934,7 +934,9 @@ async function runF1(){
       const win = window.open('', '_blank', 'width=900,height=700');
       if(!win){ alert('Przeglądarka zablokowała nowe okno. Zezwól na wyskakujące okna i spróbuj ponownie.'); return; }
       win.document.write('<html><body style="font-family:sans-serif;padding:40px;color:#666">⏳ Przygotowuję CV...</body></html>');
-      showActionModal('cv', ()=>downloadCvPDF(generatedCvText, win));
+      // Wróć focus na główne okno żeby modal był widoczny
+      window.focus();
+      showActionModal('cv', ()=>{ downloadCvPDF(generatedCvText, win); win.focus(); });
     };
   }catch(e){fail(bCV,e,results);}
 
