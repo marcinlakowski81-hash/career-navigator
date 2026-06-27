@@ -929,14 +929,7 @@ async function runF1(){
     };
     // Pobierz CV jako czysty PDF (tylko CV, gotowe do wysłania pracodawcy)
     bCV.querySelector('#btn-cv-pdf').onclick=()=>{
-      // Otwieramy okno od razu (w odpowiedzi na klik) — przeglądarka go nie zablokuje
-      // Potem pokazujemy modal oceny — po zamknięciu modalu wpisujemy treść do okna
-      const win = window.open('', '_blank', 'width=900,height=700');
-      if(!win){ alert('Przeglądarka zablokowała nowe okno. Zezwól na wyskakujące okna i spróbuj ponownie.'); return; }
-      win.document.write('<html><body style="font-family:sans-serif;padding:40px;color:#666">⏳ Przygotowuję CV...</body></html>');
-      // Wróć focus na główne okno żeby modal był widoczny
-      window.focus();
-      showActionModal('cv', ()=>{ downloadCvPDF(generatedCvText, win); win.focus(); });
+      showActionModal('cv', ()=>downloadCvPDF(generatedCvText));
     };
   }catch(e){fail(bCV,e,results);}
 
@@ -1340,6 +1333,8 @@ GoWork ponizej 2.0 to czerwona flaga. Upadlosc w grupie = WYSOKIE ryzyko.`;
   async function sendAndClose(withComment){
     const comment = withComment ? (mText?.value||'') : '';
     overlay.classList.add('hidden');
+    // Wywołaj akcję PRZED await — window.open musi być synchronicznie z klikiem
+    if(pendingAction){ pendingAction(); pendingAction=null; }
     if(modalSelected>0){
       try{
         await fetch('/api/feedback',{
@@ -1349,8 +1344,6 @@ GoWork ponizej 2.0 to czerwona flaga. Upadlosc w grupie = WYSOKIE ryzyko.`;
         });
       }catch(_){}
     }
-    if(pendingAction) pendingAction();
-    pendingAction=null;
   }
 
   mSkip.addEventListener('click',()=>sendAndClose(false));
@@ -1377,9 +1370,8 @@ GoWork ponizej 2.0 to czerwona flaga. Upadlosc w grupie = WYSOKIE ryzyko.`;
   /* ================================================================
      POBIERZ CV (PDF) — czysty plik tylko z CV, gotowy do wysłania
      ================================================================ */
-  window.downloadCvPDF = function(cvMarkdown, win){
-    // Otwiera nowe okno z CV w HTML i wywołuje print() — przeglądarka zapisuje PDF
-    // Polskie znaki działają natywnie, bez bibliotek zewnętrznych
+  window.downloadCvPDF = function(cvMarkdown){
+    // Otwiera nowe okno z CV w HTML — polskie znaki działają natywnie
 
     // Konwertuj markdown → HTML (uproszczony parser)
     function mdToHtml(src){
@@ -1430,8 +1422,7 @@ GoWork ponizej 2.0 to czerwona flaga. Upadlosc w grupie = WYSOKIE ryzyko.`;
     const cvHtml = mdToHtml(cvMarkdown);
     const today = new Date().toLocaleDateString('pl-PL');
 
-    // Użyj przekazanego okna lub otwórz nowe jako fallback
-    if(!win || win.closed){ win = window.open('', '_blank', 'width=900,height=700'); }
+    const win = window.open('', '_blank', 'width=900,height=700');
     if(!win){ alert('Przeglądarka zablokowała nowe okno. Zezwól na wyskakujące okna i spróbuj ponownie.'); return; }
 
     win.document.write(`<!DOCTYPE html>
