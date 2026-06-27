@@ -1060,7 +1060,7 @@ ZASADY:
 - Wpleć 2–3 konkretne osiągnięcia/umiejętności z CV, które bezpośrednio odpowiadają na potrzeby z ogłoszenia
 - Zakończ inicjatywą (zaproponuj spotkanie/rozmowę)
 - Format: zwykły tekst z akapitami (bez Markdown, bez nagłówków)
-- Na początku: "[Miejscowość, data]" jako placeholder, potem "Szanowni Państwo,"
+- Na początku listu wstaw datę: "[miejscowość kandydata z CV], ${new Date().toLocaleDateString('pl-PL', {day:'numeric',month:'long',year:'numeric'})}" — jeśli miejscowość nieznana użyj tylko daty. Potem "Szanowni Państwo,"
 
 Zwróć WYŁĄCZNIE treść listu — bez żadnych komentarzy ani wyjaśnień.${base}`,3000);
       out.innerHTML=`<div class="lm-result" id="lmText">${esc(lmText)}</div>
@@ -1510,14 +1510,10 @@ GoWork ponizej 2.0 to czerwona flaga. Upadlosc w grupie = WYSOKIE ryzyko.`;
 </head>
 <body>
 <div class="page">
-  <div class="cv-brand">
-    <span><strong>W Punkt CV</strong> — AI Asystent Kariery</span>
-    <span>wpunktcv.pl</span>
-  </div>
   ${cvHtml}
   <div class="cv-footer">
-    <span>Wygenerowano: ${today} · wpunktcv.pl</span>
-    <span>Wynik analizy AI — zweryfikuj przed wysłaniem</span>
+    <span>Dokument wygenerowany: ${today}</span>
+    <span>Zweryfikuj treść przed wysłaniem</span>
   </div>
   <div class="no-print" style="margin-top:24pt;text-align:center">
     <button onclick="window.print()" style="font-family:inherit;font-size:11pt;font-weight:600;
@@ -1580,12 +1576,12 @@ GoWork ponizej 2.0 to czerwona flaga. Upadlosc w grupie = WYSOKIE ryzyko.`;
 </head>
 <body>
 <div class="page">
-  <div class="lm-brand"><span><strong>W Punkt CV</strong> — AI Asystent Kariery</span><span>wpunktcv.pl</span></div>
+
   <div class="lm-to"><strong>Do:</strong> ` + company + `</div>
   ` + paragraphsHtml + `
   <div class="lm-footer">
-    <span>Wygenerowano: ` + today + ` · wpunktcv.pl</span>
-    <span>Wynik analizy AI — zweryfikuj przed wyslaniem</span>
+    <span>Dokument wygenerowany: ` + today + `</span>
+    <span>Zweryfikuj tresc przed wyslaniem</span>
   </div>
   <div class="no-print" style="margin-top:24pt;text-align:center">
     <button onclick="window.print()" style="font-family:'Inter',sans-serif;font-size:11pt;font-weight:600;background:#16263f;color:#b88a32;border:none;padding:12px 28px;border-radius:10px;cursor:pointer;margin-right:10px">\u2B07 Zapisz jako PDF (Ctrl+P)</button>
