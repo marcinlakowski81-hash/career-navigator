@@ -1371,152 +1371,161 @@ GoWork ponizej 2.0 to czerwona flaga. Upadlosc w grupie = WYSOKIE ryzyko.`;
      POBIERZ CV (PDF) — czysty plik tylko z CV, gotowy do wysłania
      ================================================================ */
   window.downloadCvPDF = function(cvMarkdown){
-    try{
-      const { jsPDF } = window.jspdf;
-      if(!jsPDF){ alert('Biblioteka PDF nie jest jeszcze załadowana. Spróbuj za chwilę.'); return; }
+    // Otwiera nowe okno z CV w HTML i wywołuje print() — przeglądarka zapisuje PDF
+    // Polskie znaki działają natywnie, bez bibliotek zewnętrznych
 
-      const doc = new jsPDF({ unit:'mm', format:'a4', orientation:'portrait' });
-
-      // Kolory i fonty
-      const INK    = [22, 38, 63];
-      const GOLD   = [184, 138, 50];
-      const MUTED  = [100, 112, 130];
-      const LINE   = [220, 212, 196];
-      const GREEN  = [63, 125, 84];
-
-      const W = 210, H = 297;
-      const ML = 18, MR = 18, MT = 18;
-      let y = MT;
-      const CW = W - ML - MR; // szerokość treści
-
-      // Funkcja zawijania tekstu
-      function addWrappedText(text, x, startY, maxW, lineH, fontSize, color, style){
-        doc.setFontSize(fontSize);
-        doc.setTextColor(...color);
-        doc.setFont('helvetica', style || 'normal');
-        const lines = doc.splitTextToSize(text, maxW);
-        lines.forEach(line => {
-          if(startY > H - 15){ doc.addPage(); startY = MT; }
-          doc.text(line, x, startY);
-          startY += lineH;
-        });
-        return startY;
-      }
-
-      // Pasek nagłówkowy
-      doc.setFillColor(...INK);
-      doc.rect(0, 0, W, 12, 'F');
-      doc.setFontSize(7);
-      doc.setTextColor(184, 138, 50);
-      doc.setFont('helvetica', 'bold');
-      doc.text('W PUNKT CV — AI Asystent Kariery', ML, 8);
-      doc.setTextColor(180, 160, 120);
-      doc.setFont('helvetica', 'normal');
-      doc.text('wpunktcv.pl', W - MR, 8, { align:'right' });
-      y = 20;
-
-      // Parsuj markdown — prosta obsługa ## h2, ### h3, **bold**, - lista, tekst
-      const lines = cvMarkdown.split(/\r?\n/);
-      let inList = false;
-
-      for(let i = 0; i < lines.length; i++){
-        const raw = lines[i];
+    // Konwertuj markdown → HTML (uproszczony parser)
+    function mdToHtml(src){
+      const lines = src.split(/\r?\n/);
+      let html = '', inList = false;
+      for(let raw of lines){
         const l = raw.trim();
-
         if(!l){
-          if(inList){ inList = false; y += 2; }
-          else { y += 3; }
+          if(inList){ html += '</ul>'; inList = false; }
+          html += '<div class="spacer"></div>';
           continue;
         }
-
-        // Nagłówek H1/H2 — sekcja CV
-        if(/^##\s+/.test(l) || /^#\s+/.test(l)){
-          inList = false;
+        // H1/H2 → sekcja
+        if(/^##?\s+/.test(l)){
+          if(inList){ html += '</ul>'; inList = false; }
           const txt = l.replace(/^#+\s+/, '');
-          y += 3;
-          if(y > H - 20){ doc.addPage(); y = MT; }
-          // Linia złota pod nagłówkiem
-          doc.setFillColor(...GOLD);
-          doc.rect(ML, y - 1, CW, 0.5, 'F');
-          doc.setFontSize(11);
-          doc.setFont('helvetica', 'bold');
-          doc.setTextColor(...INK);
-          doc.text(txt.toUpperCase(), ML, y + 5);
-          y += 9;
+          html += '<h2>' + txt + '</h2>';
           continue;
         }
-
-        // Nagłówek H3
+        // H3 → podsekcja / pracodawca
         if(/^###\s+/.test(l)){
-          inList = false;
-          const txt = l.replace(/^###\s+/, '');
-          y += 2;
-          if(y > H - 20){ doc.addPage(); y = MT; }
-          doc.setFontSize(10);
-          doc.setFont('helvetica', 'bold');
-          doc.setTextColor(...INK);
-          doc.text(txt, ML, y);
-          y += 6;
+          if(inList){ html += '</ul>'; inList = false; }
+          const txt = l.replace(/^###\s+/, '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+          html += '<h3>' + txt + '</h3>';
           continue;
         }
-
         // Lista
         if(/^[-*]\s+/.test(l)){
-          inList = true;
-          const txt = l.replace(/^[-*]\s+/, '').replace(/\*\*(.+?)\*\*/g, '$1');
-          if(y > H - 15){ doc.addPage(); y = MT; }
-          // Kropka
-          doc.setFillColor(...GOLD);
-          doc.circle(ML + 2, y - 1.5, 1, 'F');
-          const wrapped = doc.splitTextToSize(txt, CW - 8);
-          doc.setFontSize(9.5);
-          doc.setFont('helvetica', 'normal');
-          doc.setTextColor(...INK);
-          wrapped.forEach((wl, wi) => {
-            if(y > H - 15){ doc.addPage(); y = MT; }
-            doc.text(wl, ML + 6, y);
-            y += 5;
-          });
+          if(!inList){ html += '<ul>'; inList = true; }
+          const txt = l.replace(/^[-*]\s+/, '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+          html += '<li>' + txt + '</li>';
           continue;
         }
-
-        // Zwykły tekst (może mieć **pogrubienia**)
-        inList = false;
-        if(y > H - 15){ doc.addPage(); y = MT; }
-        const plain = l.replace(/\*\*(.+?)\*\*/g, '$1');
-        const wrapped = doc.splitTextToSize(plain, CW);
-        doc.setFontSize(9.5);
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(...INK);
-        wrapped.forEach(wl => {
-          if(y > H - 15){ doc.addPage(); y = MT; }
-          doc.text(wl, ML, y);
-          y += 5;
-        });
-        y += 1;
+        // Separator ---
+        if(/^---+$/.test(l)){
+          if(inList){ html += '</ul>'; inList = false; }
+          continue; // pomijamy separatory, sekcje robią swoje
+        }
+        // Zwykły tekst
+        if(inList){ html += '</ul>'; inList = false; }
+        const txt = l.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        html += '<p>' + txt + '</p>';
       }
-
-      // Stopka
-      const pageCount = doc.getNumberOfPages();
-      for(let p = 1; p <= pageCount; p++){
-        doc.setPage(p);
-        doc.setFillColor(...LINE);
-        doc.rect(0, H - 10, W, 10, 'F');
-        doc.setFontSize(6.5);
-        doc.setTextColor(...MUTED);
-        doc.setFont('helvetica', 'normal');
-        doc.text('Wygenerowano przez W Punkt CV (wpunktcv.pl) — ' + new Date().toLocaleDateString('pl-PL'), ML, H - 4);
-        if(pageCount > 1) doc.text(`${p} / ${pageCount}`, W - MR, H - 4, { align:'right' });
-      }
-
-      // Pobierz plik
-      const filename = 'CV_WPunktCV_' + new Date().toISOString().slice(0,10) + '.pdf';
-      doc.save(filename);
-
-    } catch(err){
-      alert('Błąd generowania PDF: ' + (err.message || 'nieznany'));
-      console.error(err);
+      if(inList) html += '</ul>';
+      return html;
     }
+
+    const cvHtml = mdToHtml(cvMarkdown);
+    const today = new Date().toLocaleDateString('pl-PL');
+
+    const win = window.open('', '_blank', 'width=900,height=700');
+    if(!win){ alert('Przeglądarka zablokował nowe okno. Zezwól na wyskakujące okna i spróbuj ponownie.'); return; }
+
+    win.document.write(\`<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>CV — W Punkt CV</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600;700&family=Inter:wght@400;500;600&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Inter',Arial,sans-serif;
+    font-size:10.5pt;
+    color:#16263f;
+    line-height:1.55;
+    background:#fff;
+    padding:0;
+  }
+  .page{
+    max-width:210mm;
+    margin:0 auto;
+    padding:14mm 18mm 14mm 18mm;
+  }
+  /* Nagłówek strony */
+  .cv-brand{
+    display:flex;justify-content:space-between;align-items:center;
+    border-bottom:2.5px solid #16263f;
+    padding-bottom:6pt;margin-bottom:14pt;
+    font-size:7.5pt;color:#7a7060;letter-spacing:.04em;
+  }
+  .cv-brand strong{color:#b88a32;font-weight:600}
+  /* Sekcje */
+  h2{
+    font-family:'Source Serif 4','Georgia',serif;
+    font-size:10pt;font-weight:700;
+    color:#16263f;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    margin-top:14pt;margin-bottom:5pt;
+    padding-bottom:2pt;
+    border-bottom:1.5pt solid #b88a32;
+  }
+  h3{
+    font-family:'Inter',Arial,sans-serif;
+    font-size:10pt;font-weight:600;
+    color:#16263f;margin-top:8pt;margin-bottom:3pt;
+  }
+  p{margin-bottom:4pt;font-size:10pt}
+  ul{margin:3pt 0 4pt 16pt;padding:0}
+  li{margin-bottom:2.5pt;font-size:10pt}
+  li::marker{color:#b88a32}
+  strong{font-weight:600;color:#16263f}
+  .spacer{height:4pt}
+  /* Stopka */
+  .cv-footer{
+    margin-top:18pt;padding-top:6pt;
+    border-top:1pt solid #e3dbcb;
+    font-size:7pt;color:#aaa;
+    display:flex;justify-content:space-between;
+  }
+  /* Print */
+  @media print{
+    body{font-size:10pt}
+    .page{padding:10mm 16mm}
+    .no-print{display:none!important}
+    h2{page-break-after:avoid}
+    h3{page-break-after:avoid}
+    li{page-break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="cv-brand">
+    <span><strong>W Punkt CV</strong> — AI Asystent Kariery</span>
+    <span>wpunktcv.pl</span>
+  </div>
+  \${cvHtml}
+  <div class="cv-footer">
+    <span>Wygenerowano: \${today} · wpunktcv.pl</span>
+    <span>Wynik analizy AI — zweryfikuj przed wysłaniem</span>
+  </div>
+  <div class="no-print" style="margin-top:24pt;text-align:center">
+    <button onclick="window.print()" style="font-family:inherit;font-size:11pt;font-weight:600;
+      background:#16263f;color:#b88a32;border:none;padding:12px 28px;border-radius:10px;
+      cursor:pointer;margin-right:10px">
+      ⬇ Zapisz jako PDF (Ctrl+P)
+    </button>
+    <button onclick="window.close()" style="font-family:inherit;font-size:11pt;
+      background:none;border:1px solid #ccc;color:#666;padding:12px 20px;border-radius:10px;cursor:pointer">
+      Zamknij
+    </button>
+    <p style="margin-top:10pt;font-size:8.5pt;color:#aaa">
+      W oknie drukowania wybierz: Drukarka → "Zapisz jako PDF" · Marginesy: Domyślne
+    </p>
+  </div>
+</div>
+</body>
+</html>\`);
+    win.document.close();
+    // Na desktop można od razu wywołać print, na mobile lepiej żeby user kliknął sam
+    setTimeout(()=>{ try{ win.focus(); }catch(_){} }, 400);
   };
 
   window.exportPDF = function(panel){
